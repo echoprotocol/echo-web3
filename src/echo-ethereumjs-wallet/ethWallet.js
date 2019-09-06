@@ -1,5 +1,5 @@
 import { PrivateKey, hash } from 'echojs-lib';
-import { encodeAddress } from '../utils/address-utils';
+import { addressToShortMemo } from '../utils/address-utils';
 
 /**
  *
@@ -9,6 +9,7 @@ import { encodeAddress } from '../utils/address-utils';
  */
 const wrapEthWallet = (OriginalEthWallet, echo) => {
 
+	//TODO refactor to class inherits
 	/**
 	 * register account by created name if it doesn't exist and return private key buffer
 	 * @return {Promise<Buffer>}
@@ -42,7 +43,7 @@ const wrapEthWallet = (OriginalEthWallet, echo) => {
 			throw new Error('account doesn\'t exist');
 		}
 		const {id} = account;
-		return Buffer.from(encodeAddress(id), 'hex');
+		return Buffer.from(addressToShortMemo(id), 'hex');
 	};
 
 	return OriginalEthWallet;

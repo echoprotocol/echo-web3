@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
-import {constants} from 'echojs-lib';
-import $c from 'comprehension';
+import { constants } from 'echojs-lib';
 
 //TODO to constatnts
 const CONTRACT_TYPE_ID = constants.OBJECT_TYPES.CONTRACT;
@@ -8,18 +7,12 @@ const ACCOUNT_TYPE_ID = constants.OBJECT_TYPES.ACCOUNT;
 
 export const addressRegExp = new RegExp(`^1\\.(${CONTRACT_TYPE_ID}|${ACCOUNT_TYPE_ID})\\.(([1-9]\\d*)|0)$`);
 
-/** @param {string} value */
-function checkValue(value) {
-	if (typeof value !== 'string') throw new Error('decoding value is not a string');
-	if (!/^[\da-fA-F]{64}$/.test(value)) throw new Error('decoding value is not a 32-byte in hex');
-}
-
 /**
  * @param {string} value
  * @return {string}
  */
 export function decodeAddress(value) {
-	checkValue(value);
+	if (typeof value !== 'string') throw new Error('decoding value is not a string');
 	if (value.startsWith(''.padStart(24, '0')) && value[24] !== '0') return `0x${value.substr(24)}`;
 	if (!value.startsWith(''.padStart(25, '0'))) throw new Error('first 100 bits are not zeros');
 	const _13thByte = value.substr(24, 2);
@@ -32,10 +25,11 @@ export function decodeAddress(value) {
 
 
 /**
+ * @description https://dev.echo.org/developers/smart-contracts/solidity/introduction/ convert account id to ETH represent address
  * @param {string} address
  * @returns {string}
  */
-export function encodeAddress(address){
+export function addressToShortMemo(address) {
 	if (typeof address !== 'string') throw new Error('address is not a string');
 	if (/^0x[a-fA-F\d]{40}$/.test(address)) return address.slice(2).padStart(64, '0');
 	if (!addressRegExp.test(address)) throw new Error('invalid address format');
@@ -46,8 +40,7 @@ export function encodeAddress(address){
 	return [
 		'0',
 		isContract ? '1' : '0',
-		$c(38 - preRes.length, () => 0).join(''),
+		new Array(38 - preRes.length).fill(0).map(() => 0).join(''),
 		preRes,
 	].join('');
 }
-
