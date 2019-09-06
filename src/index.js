@@ -6,6 +6,19 @@ import EchoEthereumjsTx from './echo-ethereumjs-tx';
 import { getWrappedEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
 
+/** @typedef {
+*	{
+*  		asset:String
+*  	}
+* 	} ProviderOptions */
+
+/** @typedef {
+*	{
+*  		toHex: Function
+*  		toBigNumber: Function
+*  	}
+* 	} Web3Utils */
+
 /**
  *
  * @param {Web3} Web3Class
@@ -19,12 +32,29 @@ const wrapWeb3 = (Web3Class) => {
 
 	return class WrappedWeb3 extends Web3Class {
 
-		constructor(...args){
+		constructor(...args) {
 			super(...args);
+
 			const { ethWallet, hdkey } = getWrappedEthWalletLib(this.currentProvider.echo);
 
-			this.ethWallet = ethWallet;
-			this.hdkey = hdkey;
+			this._ethWallet = ethWallet;
+			this._hdkey = hdkey;
+
+			this._injectInstanceUtilsToProvider();
+		}
+
+		get ethWallet() {
+			return this._ethWallet;
+		}
+
+		get hdkey() {
+			return this._hdkey;
+		}
+
+		_injectInstanceUtilsToProvider(){
+			const { toHex, toBigNumber } = this.utils;
+			this.currentProvider.setWeb3Utils({ toHex, toBigNumber });
+
 		}
 
 		createEthereumTransaction(ethereumTx) {

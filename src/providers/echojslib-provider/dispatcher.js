@@ -1,66 +1,32 @@
-import { decodeAddress } from '../../utils/address-utils';
+import GetBalance from './methods/get-balance';
 
 class Dispatcher {
 
-	constructor(echoInstance) {
+	/**
+	 *
+	 * @param {Echo} echoInstance
+	 * @param {Web3Utils} web3Utils
+	 * @param {Asset} asset
+	 */
+	constructor(echoInstance, web3Utils, asset) {
+		this._asset = asset;
 		this._echo = echoInstance;
+		this._web3Utils = web3Utils;
 	}
 
-	resolveMethod(method) {
-		switch(method){
-			case 'eth_getBalance': return this._getBalance.bind(this);
-			default: return null;
+	/**
+	 *
+	 * @param method
+	 * @param params
+	 * @return {*}
+	 */
+	resolveMethod(method, params) {
+		switch (method) {
+			case 'eth_getBalance':
+				return new GetBalance(this._echo, this._web3Utils, params, this._asset);
+			default:
+				return null;
 		}
-	}
-
-	async _getBalance(params) {
-		const [ethAddress] = params;
-
-		const accountId = decodeAddress(ethAddress);
-
-		this.echo.getFullAccounts([accountId])
-			.then((results) => {
-				if (!results || !results[0]) {
-					return cb('Unknown account id');
-				}
-
-				const {balances} = results[0];
-				const balancesArray = Object.keys(balances).map((assetType) => ({assetType, objectId: balances[assetType]}));
-
-				if (!balancesArray.length) {
-					return cb(null, [{
-						precision: 8,
-						symbol: 'ECHO',
-						amount: '0',
-						assetType: '1.3.0'
-					}]);
-				}
-
-				Promise.all(balancesArray.map((balanceObject) => {
-					return new Promise((resolve) => {
-						this.echo.getObject(balanceObject.objectId)
-							.then((result) => ({
-								amount: result.balance,
-								assetType: balanceObject.assetType
-							}))
-							.then((result) => {
-								this.echo.getObject(result.assetType)
-									.then((assetResult) => resolve({
-										...result,
-										symbol: assetResult.symbol,
-										precision: assetResult.precision
-									}));
-							})
-							.catch(() => resolve({
-								amount: null,
-								assetType: balanceObject.assetType
-							}));
-					});
-				}))
-					.then((result) => {
-						return cb(null, result);
-					});
-			});
 	}
 
 }

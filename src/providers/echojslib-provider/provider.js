@@ -1,37 +1,69 @@
-import echo, {constants} from 'echojs-lib';
+import echo, { constants } from 'echojs-lib';
 
 import Dispatcher from './dispatcher';
-import {ECHO_CONSTANTS} from '../../constants';
+import { ECHO_CONSTANTS } from '../../constants';
+
+
+/** @typedef {
+*	{
+*  		id:String,
+*  	    precision: Number|null
+*  	}
+* 	} Asset */
 
 class EchoProvider {
+
 	/**
 	 *
 	 * @param {String} host
-	 * @param {Object} options
-	 * @param {String} options.asset
+	 * @param {ProviderOptions} options
 	 */
 	constructor(host, options = {}) {
 		this._echo = echo;
 		this.host = host;
 
-		this.dispatcher = null;
+		/** @type {Web3Utils} */
+		this._web3Utils = null;
 
-		this.asset = ECHO_CONSTANTS.DEFAULT_ASSET_ID || options.asset;
+		this._dispatcher = null;
+
+
+		/** @type {Asset} */
+		this.asset = {
+			id: ECHO_CONSTANTS.DEFAULT_ASSET_ID || options.asset,
+			precision: null
+		};
 	}
 
 	async init() {
-		// TODO:: need to pass options?
-		await this.echo.connect(this.host, {apis: constants.WS_CONSTANTS.CHAIN_APIS});
+		await this.echo.connect(this.host, { apis: constants.WS_CONSTANTS.CHAIN_APIS });
+
+		// asset info initialization on provider init
+		const assetObject = await this.echo.api.getObject(this.asset.id);
+		if(!assetObject){
+			throw new Error(`unknown asset id: ${this.asset.id}`);
+		}
+
+		this.asset.precision = assetObject.precision;
+
 		/** @type {Dispatcher}*/
-		this.dispatcher = new Dispatcher(echo);
+		this._dispatcher = new Dispatcher(echo, this._web3Utils, this.asset);
 	}
 
 	/**
 	 *
-	 * @return {echo | *}
+	 * @return {Echo}
 	 */
 	get echo() {
 		return this._echo;
+	}
+
+	/**
+	 * pass utils functions from wrapped Web3 instance
+	 * @param {Web3Utils} web3Utils
+	 */
+	setWeb3Utils(web3Utils) {
+		this._web3Utils = web3Utils;
 	}
 
 	/**
@@ -43,20 +75,20 @@ class EchoProvider {
 	 */
 	send(payload, callback) {
 
-		if (!this.dispatcher) {
+		if (!this._dispatcher) {
 			return callback(new Error('Init provider first'));
 		}
 
 		const { method, params } = payload;
-		const dispatchMethod = this.dispatcher.resolveMethod(method);
+		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
-		if (!dispatchMethod) {
+		if (!echoSpyMethod) {
 			throw new Error('method not implemented');
 		}
 
-		dispatchMethod(params)
+		echoSpyMethod.execute()
 			.then(result => {
-				return callback(null, result);
+				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
 			})
 			.catch(error => {
 				return callback(error);
@@ -65,7 +97,34 @@ class EchoProvider {
 	}
 
 	disconnect() {
-		this._echo.disconnect()
+		// TODO return Promises
+		this._echo.disconnect();
+	}
+
+	/**
+	 *
+	 * @param {{method: String, id: Number|String}} payload
+	 * @param {*} result
+	 * @param {*?} error
+	 * @return {*}
+	 * @private
+	 */
+	_wrapAsJsonRpcResponse(payload, result, error) {
+		if(error){
+			return {
+				id: payload.id,
+				method: payload.method,
+				jsonrpc:'2.0',
+				error
+			};
+		}
+
+		return {
+			id: payload.id,
+			method: payload.method,
+			jsonrpc:'2.0',
+			result
+		};
 	}
 
 
