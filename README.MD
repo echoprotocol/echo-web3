@@ -2,9 +2,26 @@
 # echo-web3
 
 echo-web3 is a wrapper over Web3 that allow you to use web3's instance methods with the saving of methods signatures by calling to ECHO blockchain
-## Installation Prerequisites
 
-TB;DL;
+## Usage
+
+```javascript
+import Web3 from 'web3';
+import EchoWeb3 from '../dist';
+
+const EchoProvider = EchoWeb3.echoProvider;
+const WrappedWeb3 = EchoWeb3(Web3)
+const echoNetwork = 'wss://testnet.echo-dev.io/ws';
+
+(async () => {
+	const echoProvider = new EchoProvider(echoNetwork, { assetId: '1.3.0' });
+	const wrappedWeb3Instance = new WrappedWeb3(echoProvider);
+	await echoProvider.init() // create connection to echo node
+
+	const balance = await wrappedWeb3Instance.eth.getBalance('0x010000000000000000000000000000000000014d');
+	// balance = 1000000000000
+})()
+```
 
 ## License
 
