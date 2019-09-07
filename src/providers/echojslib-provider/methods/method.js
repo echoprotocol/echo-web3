@@ -43,7 +43,7 @@ class Method {
 	}
 
 	/**
-	 * @abstract
+	 * @override
 	 * @protected
 	 */
 	_formatInput() {
@@ -51,7 +51,7 @@ class Method {
 	}
 
 	/**
-	 * @abstract
+	 * @override
 	 * @protected
 	 */
 	_formatOutput(result) {

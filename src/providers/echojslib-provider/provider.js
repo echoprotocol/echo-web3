@@ -40,7 +40,7 @@ class EchoProvider {
 
 		// asset info initialization on provider init
 		const assetObject = await this.echo.api.getObject(this.asset.id);
-		if(!assetObject){
+		if (!assetObject) {
 			throw new Error(`unknown asset id: ${this.asset.id}`);
 		}
 
@@ -73,7 +73,19 @@ class EchoProvider {
 	 * @param {Object} payload
 	 * @param {Function} callback triggered on end with (err, result)
 	 */
-	send(payload, callback) {
+	send(payload) {
+		//TODO
+		return this._wrapAsJsonRpcResponse(payload, '0x0')
+	}
+
+	/**
+	 * Should be used to make async request
+	 *
+	 * @method send
+	 * @param {Object} payload
+	 * @param {Function} callback triggered on end with (err, result)
+	 */
+	sendAsync(payload, callback) {
 
 		if (!this._dispatcher) {
 			return callback(new Error('Init provider first'));
@@ -83,22 +95,20 @@ class EchoProvider {
 		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
 		if (!echoSpyMethod) {
-			throw new Error('method not implemented');
+			throw new Error(`method ${method} not implemented`);
 		}
 
 		echoSpyMethod.execute()
-			.then(result => {
-				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
-			})
-			.catch(error => {
-				return callback(error);
-			});
-
+		.then(result => {
+			return callback(null, this._wrapAsJsonRpcResponse(payload, result));
+		})
+		.catch(error => {
+			return callback(error);
+		});
 	}
 
 	disconnect() {
-		// TODO return Promises
-		this._echo.disconnect();
+		return this._echo.disconnect();
 	}
 
 	/**
@@ -110,21 +120,11 @@ class EchoProvider {
 	 * @private
 	 */
 	_wrapAsJsonRpcResponse(payload, result, error) {
-		if(error){
-			return {
-				id: payload.id,
-				method: payload.method,
-				jsonrpc:'2.0',
-				error
-			};
-		}
-
-		return {
+		return ({
 			id: payload.id,
-			method: payload.method,
-			jsonrpc:'2.0',
-			result
-		};
+			jsonrpc: '2.0',
+			...(error ? { error } : { result })
+		});
 	}
 
 
