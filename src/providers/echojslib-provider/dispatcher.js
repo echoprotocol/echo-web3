@@ -1,4 +1,5 @@
 import GetBalance from './methods/get-balance';
+import GasPrice from './methods/gas-price';
 
 class Dispatcher {
 
@@ -24,6 +25,9 @@ class Dispatcher {
 		switch (method) {
 			case 'eth_getBalance':
 				return new GetBalance(this._echo, this._web3Utils, params, this._asset);
+			case 'eth_gasPrice':{
+				return new GasPrice(this._echo, this._web3Utils, params, this._asset);
+			}
 			default:
 				return null;
 		}

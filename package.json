@@ -2,7 +2,8 @@
   "name": "echo-web3",
   "version": "0.0.1",
   "description": "wrapper over web3 that help you to save your DAPP code with web3 interface by call to ECHO blockchain",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
     "build": "npx babel src --out-dir dist --copy-files",
     "lint": "eslint .",

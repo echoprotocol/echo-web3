@@ -24,51 +24,51 @@ import * as constants from './constants';
  * @param {Web3} Web3Class
  * @return {{new(*=): WrappedWeb3, prototype: WrappedWeb3}}
  */
-const wrapWeb3 = (Web3Class) => {
-
-	if (semver.lt(Web3Class.version, constants.MIN_WEB3_VERSION)) {
-		throw new Error(`A minimum provided Web3 version is ${constants.MIN_WEB3_VERSION}. You have provided ${Web3Class.version} version`);
-	}
+const EchoWeb3 = (Web3Class) => {
 
 	return class WrappedWeb3 extends Web3Class {
 
-		constructor(...args) {
-			super(...args);
+		constructor(provider) {
+			super();
 
-			const { ethWallet, hdkey } = getWrappedEthWalletLib(this.currentProvider.echo);
+			// check the minimal Web3 API version for  methods stable overriding
+			if (semver.lt(this.version.api, constants.MIN_WEB3_API_VERSION))
+				throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);
 
+			// set provider if web3 version isn't least than supported
+			this.setProvider(provider);
+
+			// wrap Ethereumjs-wallet classes with connected ECHO instance
+			const { ethWallet, hdkey } = getWrappedEthWalletLib(provider.echo);
 			this._ethWallet = ethWallet;
 			this._hdkey = hdkey;
 
-			this._injectInstanceUtilsToProvider();
+			// the extractions of utils(encoders, formatters, etc.) from original web3 instance
+			const { toHex, toBigNumber } = this;
+			this.currentProvider.setWeb3Utils({ toHex, toBigNumber });
 		}
 
 		get ethWallet() {
 			return this._ethWallet;
 		}
 
-		get hdkey() {
+		get hdKey() {
 			return this._hdkey;
-		}
-
-		_injectInstanceUtilsToProvider(){
-			const { toHex, toBigNumber } = this.utils;
-			this.currentProvider.setWeb3Utils({ toHex, toBigNumber });
-
 		}
 
 		createEthereumTransaction(ethereumTx) {
 			return new EchoEthereumjsTx(ethereumTx, this.currentProvider);
 		}
 
+		disconnect(){
+			return (this.currentProvider && this.currentProvider.disconnect());
+		};
+
 	};
 };
 
-/**
- *
- * @type {EchoProvider}
- */
-wrapWeb3.echoProvider = EchoProvider;
-wrapWeb3.bridgeProvider = BridgeProvider;
+export {
+	EchoProvider
+}
 
-export default wrapWeb3;
+export default EchoWeb3;
