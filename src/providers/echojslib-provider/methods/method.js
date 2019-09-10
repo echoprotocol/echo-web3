@@ -6,21 +6,15 @@ class Method {
 	/**
 	 *
 	 * @param {Echo} echo
-	 * @param {Object} web3Utils
 	 * @param {[]} params
 	 * @param {Asset} asset
 	 */
-	constructor(echo, web3Utils, params, asset) {
+	constructor(echo, params, asset) {
 		/**
 		 * @type {Echo}
 		 * @protected
 		 * */
 		this.echo = echo;
-		/**
-		 * @type {Web3Utils}
-		 * @protected
-		 * */
-		this.web3Utils = web3Utils;
 		/**
 		 * @type {[]}
 		 * @protected
@@ -31,6 +25,11 @@ class Method {
 		 * @protected
 		 * */
 		this.asset = asset;
+	}
+
+	get api(){
+		if(!this.echo || !this.echo.api) throw new Error('echo api wasn\'t provided');
+		return this.echo.api;
 	}
 
 	/**

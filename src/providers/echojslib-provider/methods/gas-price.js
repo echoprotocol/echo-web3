@@ -1,5 +1,5 @@
 import Method from './method';
-import { decodeAddress } from '../../../utils/address-utils';
+import { shortMemoToAddress } from '../../../utils/address-utils';
 import { assetValueToWei } from '../../../utils/converters-utils';
 import { ETH_CONSTANTS } from '../../../constants';
 

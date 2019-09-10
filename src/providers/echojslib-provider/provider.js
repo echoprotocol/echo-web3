@@ -3,14 +3,6 @@ import echo, { constants } from 'echojs-lib';
 import Dispatcher from './dispatcher';
 import { ECHO_CONSTANTS } from '../../constants';
 
-
-/** @typedef {
-*	{
-*  		id:String,
-*  	    precision: Number|null
-*  	}
-* 	} Asset */
-
 class EchoProvider {
 
 	/**
@@ -19,11 +11,9 @@ class EchoProvider {
 	 * @param {ProviderOptions} options
 	 */
 	constructor(host, options = {}) {
+		this.isEchoProvider = true;
 		this._echo = echo;
 		this.host = host;
-
-		/** @type {Web3Utils} */
-		this._web3Utils = null;
 
 		this._dispatcher = null;
 
@@ -47,7 +37,7 @@ class EchoProvider {
 		this.asset.precision = assetObject.precision;
 
 		/** @type {Dispatcher}*/
-		this._dispatcher = new Dispatcher(echo, this._web3Utils, this.asset);
+		this._dispatcher = new Dispatcher(echo, this.asset);
 	}
 
 	/**
@@ -56,14 +46,6 @@ class EchoProvider {
 	 */
 	get echo() {
 		return this._echo;
-	}
-
-	/**
-	 * pass utils functions from wrapped Web3 instance
-	 * @param {Web3Utils} web3Utils
-	 */
-	setWeb3Utils(web3Utils) {
-		this._web3Utils = web3Utils;
 	}
 
 	/**
@@ -86,7 +68,6 @@ class EchoProvider {
 	 * @param {Function} callback triggered on end with (err, result)
 	 */
 	sendAsync(payload, callback) {
-
 		if (!this._dispatcher) {
 			return callback(new Error('Init provider first'));
 		}
@@ -95,14 +76,17 @@ class EchoProvider {
 		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
 		if (!echoSpyMethod) {
-			throw new Error(`method ${method} not implemented`);
+			throw new Error(`method ${method} not implemented, 
+			params ${JSON.stringify(params, null, 1)}`);
 		}
 
 		echoSpyMethod.execute()
 		.then(result => {
+			console.log('Provider result', method, JSON.stringify(result, null, 1));
 			return callback(null, this._wrapAsJsonRpcResponse(payload, result));
 		})
 		.catch(error => {
+			console.log('Provider error', method, JSON.stringify(error, null, 1));
 			return callback(error);
 		});
 	}

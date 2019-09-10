@@ -1,10 +1,10 @@
-import BigNumber from 'bignumber.js';
+import toHex from 'to-hex';
 import Method from './method';
 import { shortMemoToAddress } from '../../../utils/address-utils';
-import { assetValueToWei } from '../../../utils/converters-utils';
+import { addHexPrefix, assetValueToWei } from '../../../utils/converters-utils';
 import { ETH_CONSTANTS } from '../../../constants';
 
-class GetBalance extends Method {
+class GetTransactionCount extends Method {
 
 	/**
 	 * make calculation and api call echo
@@ -13,14 +13,15 @@ class GetBalance extends Method {
 	async execute() {
 		const { accountId } = this._formatInput();
 
-		const balanceResults = await this.api.getAccountBalances(accountId, [this.asset.id]);
-		const assetValue = balanceResults.find((item) => item.asset_id === this.asset.id);
+		const account = await this.api.getObject(accountId);
 
-		if (!assetValue || !balanceResults.length) {
+		if (!account ) {
 			return this._formatOutput(0);
 		}
 
-		return this._formatOutput(assetValue.amount);
+		const {total_ops: totalOperations} = await this.api.getObject(account.statistics);
+
+		return this._formatOutput(totalOperations);
 	}
 
 	/**
@@ -32,7 +33,7 @@ class GetBalance extends Method {
 		//TODO default block?
 		const [ethAddress, defaultBlock] = this.params;
 
-		if (defaultBlock !== ETH_CONSTANTS.DEFAULT_BLOCK) {
+		if(defaultBlock !== ETH_CONSTANTS.DEFAULT_BLOCK){
 			console.warn('method doesn\'t support "defaultBlock" parameter');
 		}
 
@@ -44,13 +45,13 @@ class GetBalance extends Method {
 	/**
 	 *
 	 * @param result
-	 * @return {BigNumber}
+	 * @return {String}
 	 * @private
 	 */
 	_formatOutput(result) {
-		return assetValueToWei(result, this.asset.precision);
+		return addHexPrefix(toHex(result));
 	}
 
 }
 
-export default GetBalance;
+export default GetTransactionCount;
