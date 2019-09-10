@@ -1,18 +1,18 @@
 import GetBalance from './methods/get-balance';
 import GasPrice from './methods/gas-price';
+import Call from './methods/call';
+import GetTransactionCount from './methods/get-transaction-count';
 
 class Dispatcher {
 
 	/**
 	 *
 	 * @param {Echo} echoInstance
-	 * @param {Web3Utils} web3Utils
 	 * @param {Asset} asset
 	 */
-	constructor(echoInstance, web3Utils, asset) {
+	constructor(echoInstance, asset) {
 		this._asset = asset;
 		this._echo = echoInstance;
-		this._web3Utils = web3Utils;
 	}
 
 	/**
@@ -24,10 +24,13 @@ class Dispatcher {
 	resolveMethod(method, params) {
 		switch (method) {
 			case 'eth_getBalance':
-				return new GetBalance(this._echo, this._web3Utils, params, this._asset);
-			case 'eth_gasPrice':{
-				return new GasPrice(this._echo, this._web3Utils, params, this._asset);
-			}
+				return new GetBalance(this._echo, params, this._asset);
+			case 'eth_gasPrice':
+				return new GasPrice(this._echo, params, this._asset);
+			case 'eth_call':
+				return new Call(this._echo, params, this._asset);
+			case 'eth_getTransactionCount':
+				return new GetTransactionCount(this._echo, params, this._asset);
 			default:
 				return null;
 		}

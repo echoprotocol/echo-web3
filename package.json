@@ -13,11 +13,11 @@
   "author": "PixelPlex",
   "license": "ISC",
   "dependencies": {
+    "bignumber.js": "^8.1.1",
     "echojs-lib": "^1.6.0",
     "ethereumjs-wallet": "^0.6.3",
     "semver": "^6.3.0",
-    "web3": "^1.2.1",
-    "bignumber.js": "^8.0.1"
+    "to-hex": "^0.0.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

@@ -2,9 +2,18 @@ import semver from 'semver';
 
 import EchoProvider from './providers/echojslib-provider';
 import BridgeProvider from './providers/bridge-provider';
-import EchoEthereumjsTx from './echo-ethereumjs-tx';
+import EthereumjsTx from './echo-ethereumjs-tx';
 import { getWrappedEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
+
+/** @typedef {
+*	{
+*  		from?: String
+*  		to?: String
+*  		value?: String
+*  		data?: String
+*  	}
+* 	} EthereumTransaction */
 
 /** @typedef {
 *	{
@@ -12,12 +21,13 @@ import * as constants from './constants';
 *  	}
 * 	} ProviderOptions */
 
+
 /** @typedef {
 *	{
-*  		toHex: Function
-*  		toBigNumber: Function
+*  		id:String,
+*  	    precision: Number|null
 *  	}
-* 	} Web3Utils */
+* 	} Asset */
 
 /**
  *
@@ -35,17 +45,17 @@ const EchoWeb3 = (Web3Class) => {
 			if (semver.lt(this.version.api, constants.MIN_WEB3_API_VERSION))
 				throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);
 
-			// set provider if web3 version isn't least than supported
-			this.setProvider(provider);
+			if (provider.isEchoProvider) {
+				// set provider if web3 version isn't least than supported
+				this.setProvider(provider);
+			} else {
+				throw new Error('You can pass only Echo compatibility provider')
+			}
 
 			// wrap Ethereumjs-wallet classes with connected ECHO instance
 			const { ethWallet, hdkey } = getWrappedEthWalletLib(provider.echo);
 			this._ethWallet = ethWallet;
 			this._hdkey = hdkey;
-
-			// the extractions of utils(encoders, formatters, etc.) from original web3 instance
-			const { toHex, toBigNumber } = this;
-			this.currentProvider.setWeb3Utils({ toHex, toBigNumber });
 		}
 
 		get ethWallet() {
@@ -56,11 +66,20 @@ const EchoWeb3 = (Web3Class) => {
 			return this._hdkey;
 		}
 
+		/**
+		 *
+		 * @param {EthereumTransaction} ethereumTx
+		 * @return {EthereumjsTx}
+		 */
 		createEthereumTransaction(ethereumTx) {
-			return new EchoEthereumjsTx(ethereumTx, this.currentProvider);
+			return new EthereumjsTx(ethereumTx, this.currentProvider.echo, this.currentProvider.asset);
 		}
 
-		disconnect(){
+		/**
+		 * disconnect from ECHO network
+		 * @return {*}
+		 */
+		disconnect() {
 			return (this.currentProvider && this.currentProvider.disconnect());
 		};
 
@@ -68,7 +87,8 @@ const EchoWeb3 = (Web3Class) => {
 };
 
 export {
-	EchoProvider
+	EchoProvider,
+	EthereumjsTx
 }
 
 export default EchoWeb3;

@@ -3,7 +3,7 @@
 
 echo-web3 is a wrapper over Web3 that allow you to use web3's instance methods with the saving of methods signatures by calling to ECHO blockchain
 
-## Usage
+## Basic Usage
 
 ```javascript
 import Web3 from 'web3';
@@ -23,14 +23,45 @@ const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 })()
 ```
 
+## Ehtereumjs-wallet
+
+For backward compatibility with the [Ethereumjs-wallet](https://github.com/ethereumjs/ethereumjs-wallet) 
+
+TB;DL
+
+## Ehtereumjs-tx
+
+For backward compatibility with the [Ethereumjs-tx](https://github.com/ethereumjs/ethereumjs-tx) 
+was designed class `EthereumjsTx` that received a ECHO instance when is created by `EchoWeb3Instance`: 
+
+```javascript
+(async () => {
+	const template = {
+		to: "0x010000000000000000000000000000000000014d",
+		data: "0x095ea7b30000000000000000000000000100000000000000000000000000000000000155000000000000000000000000000000000000000000000000002386f26fc10000",
+		from: "0x0000000000000000000000000000000000000189",
+		value: '0x0',
+	} // contract call
+    		
+	const transaction = wrappedWeb3Instance.createEthereumTransaction(template); //pass the etehreum transaction object
+	await transaction.sign(privateKey);  //signing is required before getting of raw tx
+	const rawTx = transaction.serialize()  // getting of raw tx buffer
+	console.log(rawTx.toString('hex'));
+	
+	// a3b9c4eac9e93a6d775d0119f5000000000000000089030000000000000000008a01307830393565613762333030303030
+	// 3030303030303030303030303030303030303030313030303030303030303030303030303030303030303030303030303
+	// 0303030303030303135353030303030303030303030303030303030303030303030303030303030303030303030303030
+	// 3030303030303030303030303233383666323666633130303030cd02000001eb4f9055faeb3d65362eb2fe1611203cb35
+	// aa09b9f4bd7cae52c631109e1087d0196850e689646552c5fda3007e5d27c513938dee872e6d3c2bbc678b9b6a20e
+	
+})()
+```
+
 ## License
 
 The MIT License (MIT)
 
 Copyright (c) 2019 Echo Technological Solutions LLC
-
-Copyright (c) 2014, 2015, 2019 the individual contributors
-
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
