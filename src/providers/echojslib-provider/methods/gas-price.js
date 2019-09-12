@@ -1,7 +1,4 @@
 import Method from './method';
-import { shortMemoToAddress } from '../../../utils/address-utils';
-import { assetValueToWei } from '../../../utils/converters-utils';
-import { ETH_CONSTANTS } from '../../../constants';
 
 class GetBalance extends Method {
 

@@ -49,15 +49,12 @@ class EchoProvider {
 	}
 
 	/**
-	 * Should be used to make async request
 	 *
-	 * @method send
-	 * @param {Object} payload
-	 * @param {Function} callback triggered on end with (err, result)
+	 * @param payload
 	 */
 	send(payload) {
-		//TODO
-		return this._wrapAsJsonRpcResponse(payload, '0x0')
+		const { method } = payload;
+		throw new Error(`The Echo-Web3 provider object does not support synchronous methods like ${method} without a callback parameter`);
 	}
 
 	/**
@@ -81,14 +78,12 @@ class EchoProvider {
 		}
 
 		echoSpyMethod.execute()
-		.then(result => {
-			console.log('Provider result', method, JSON.stringify(result, null, 1));
-			return callback(null, this._wrapAsJsonRpcResponse(payload, result));
-		})
-		.catch(error => {
-			console.log('Provider error', method, JSON.stringify(error, null, 1));
-			return callback(error);
-		});
+			.then(result => {
+				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
+			})
+			.catch(error => {
+				return callback(error);
+			});
 	}
 
 	disconnect() {
@@ -104,11 +99,11 @@ class EchoProvider {
 	 * @private
 	 */
 	_wrapAsJsonRpcResponse(payload, result, error) {
-		return ({
+		return {
 			id: payload.id,
 			jsonrpc: '2.0',
-			...(error ? { error } : { result })
-		});
+			...error ? { error } : { result }
+		};
 	}
 
 
