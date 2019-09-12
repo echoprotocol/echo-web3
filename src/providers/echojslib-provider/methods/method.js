@@ -50,6 +50,7 @@ class Method {
 	}
 
 	/**
+	 * @param {String|Number|Object} result
 	 * @override
 	 * @protected
 	 */

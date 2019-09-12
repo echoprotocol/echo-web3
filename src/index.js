@@ -43,13 +43,13 @@ const EchoWeb3 = (Web3Class) => {
 
 			// check the minimal Web3 API version for  methods stable overriding
 			if (semver.lt(this.version.api, constants.MIN_WEB3_API_VERSION))
-				throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);
+			{throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);}
 
 			if (provider.isEchoProvider) {
 				// set provider if web3 version isn't least than supported
 				this.setProvider(provider);
 			} else {
-				throw new Error('You can pass only Echo compatibility provider')
+				throw new Error('You can pass only Echo compatibility provider');
 			}
 
 			// wrap Ethereumjs-wallet classes with connected ECHO instance
@@ -80,8 +80,8 @@ const EchoWeb3 = (Web3Class) => {
 		 * @return {*}
 		 */
 		disconnect() {
-			return (this.currentProvider && this.currentProvider.disconnect());
-		};
+			return this.currentProvider && this.currentProvider.disconnect();
+		}
 
 	};
 };
@@ -89,6 +89,6 @@ const EchoWeb3 = (Web3Class) => {
 export {
 	EchoProvider,
 	EthereumjsTx
-}
+};
 
 export default EchoWeb3;

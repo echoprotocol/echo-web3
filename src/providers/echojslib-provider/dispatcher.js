@@ -1,7 +1,10 @@
-import GetBalance from './methods/get-balance';
-import GasPrice from './methods/gas-price';
-import Call from './methods/call';
-import GetTransactionCount from './methods/get-transaction-count';
+import {
+	GetBalance,
+	GasPrice,
+	Call,
+	GetTransactionCount,
+	GetBlockByNumber
+} from './methods';
 
 class Dispatcher {
 
@@ -23,6 +26,8 @@ class Dispatcher {
 	 */
 	resolveMethod(method, params) {
 		switch (method) {
+			case 'eth_getBlockByNumber':
+				return new GetBlockByNumber(this._echo, params, this._asset);
 			case 'eth_getBalance':
 				return new GetBalance(this._echo, params, this._asset);
 			case 'eth_gasPrice':

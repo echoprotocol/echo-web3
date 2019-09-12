@@ -1,5 +1,5 @@
 import { PrivateKey, serializers } from 'echojs-lib';
-import { mapEthTxToEcho } from '../utils/transaction-utils';
+import { mapEthereumTxResultToEcho } from '../utils/transaction-utils';
 import { isValidAddress, isValidData, isValidValue } from '../utils/validators';
 
 class EthereumjsTx {
@@ -13,7 +13,7 @@ class EthereumjsTx {
 	constructor(ethereumTx, echo, asset) {
 		this.echo = echo;
 		this._validateTransaction(ethereumTx);
-		const { operationId, options } = mapEthTxToEcho(ethereumTx, asset);
+		const { operationId, options } = mapEthereumTxResultToEcho(ethereumTx, asset);
 		/** @type {Transaction} */
 		this._transaction = echo.createTransaction().addOperation(operationId, options);
 	}
@@ -38,7 +38,7 @@ class EthereumjsTx {
 	}
 
 	_validateTransaction(ethereumTx) {
-		if (typeof ethereumTx !== 'object') throw new Error('transaction is not an object');
+		if (!ethereumTx || typeof ethereumTx !== 'object') throw new Error('transaction is not an object');
 		const { from, to, value, data } = ethereumTx;
 		if(from && !isValidAddress(from)) throw new Error('invalid "form" field');
 		if(to && !isValidAddress(to)) throw new Error('invalid "to" field');

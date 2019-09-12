@@ -1,7 +1,7 @@
 import toHex from 'to-hex';
 import Method from './method';
 import { shortMemoToAddress } from '../../../utils/address-utils';
-import { addHexPrefix, assetValueToWei } from '../../../utils/converters-utils';
+import { addHexPrefix } from '../../../utils/converters-utils';
 import { ETH_CONSTANTS } from '../../../constants';
 
 class GetTransactionCount extends Method {
@@ -15,7 +15,7 @@ class GetTransactionCount extends Method {
 
 		const account = await this.api.getObject(accountId);
 
-		if (!account ) {
+		if (!account) {
 			return this._formatOutput(0);
 		}
 
