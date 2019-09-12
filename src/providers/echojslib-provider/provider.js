@@ -85,7 +85,6 @@ class EchoProvider {
 				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
 			})
 			.catch(error => {
-				console.log(error);
 				return callback(this._wrapAsJsonRpcResponse(payload, null, error));
 			});
 	}
