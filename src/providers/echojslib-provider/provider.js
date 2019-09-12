@@ -54,6 +54,10 @@ class EchoProvider {
 	 */
 	send(payload) {
 		const { method } = payload;
+		if(method === 'eth_gasPrice'){
+			return this._wrapAsJsonRpcResponse(payload, '0x0');
+
+		}
 		throw new Error(`The Echo-Web3 provider object does not support synchronous methods like ${method} without a callback parameter`);
 	}
 
@@ -68,13 +72,12 @@ class EchoProvider {
 		if (!this._dispatcher) {
 			return callback(new Error('Init provider first'));
 		}
-
 		const { method, params } = payload;
+
 		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
 		if (!echoSpyMethod) {
-			throw new Error(`method ${method} not implemented, 
-			params ${JSON.stringify(params, null, 1)}`);
+			return callback(`method ${method} not implemented, params ${JSON.stringify(params, null, 1)}`);
 		}
 
 		echoSpyMethod.execute()
@@ -82,7 +85,8 @@ class EchoProvider {
 				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
 			})
 			.catch(error => {
-				return callback(error);
+				console.log(error);
+				return callback(this._wrapAsJsonRpcResponse(payload, null, error));
 			});
 	}
 

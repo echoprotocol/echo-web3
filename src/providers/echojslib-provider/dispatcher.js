@@ -3,7 +3,8 @@ import {
 	GasPrice,
 	Call,
 	GetTransactionCount,
-	GetBlockByNumber
+	GetBlockByNumber,
+	GetCode
 } from './methods';
 
 class Dispatcher {
@@ -36,6 +37,8 @@ class Dispatcher {
 				return new Call(this._echo, params, this._asset);
 			case 'eth_getTransactionCount':
 				return new GetTransactionCount(this._echo, params, this._asset);
+			case 'eth_getCode':
+				return new GetCode(this._echo, params, this._asset);
 			default:
 				return null;
 		}
