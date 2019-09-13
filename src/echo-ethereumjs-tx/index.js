@@ -45,6 +45,43 @@ class EthereumjsTx {
 		if(value && !isValidValue(value)) throw new Error('invalid "value" field');
 		if(data && !isValidData(data)) throw new Error('invalid "data" field');
 	}
+
+	hash(){
+		throw new Error('not implemented');
+	}
+
+	getChainId(){
+		throw new Error('not implemented');
+	}
+
+	getSenderAddress(){
+		throw new Error('not implemented');
+	}
+
+	getSenderPublicKey(){
+		throw new Error('not implemented');
+	}
+
+	verifySignature(){
+		throw new Error('not implemented');
+	}
+
+	getDataFee(){
+		throw new Error('not implemented');
+	}
+
+	getBaseFee(){
+		throw new Error('not implemented');
+	}
+
+	getUpfrontCost(){
+		throw new Error('not implemented');
+	}
+
+	validate(){
+		throw new Error('not implemented');
+	}
+
 }
 
 export default EthereumjsTx;

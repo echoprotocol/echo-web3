@@ -12,7 +12,7 @@ import wrapHdkey from './hdkey';
  */
 export const getWrappedEthWalletLib = (echo) => {
 	const wrappedEthWalletClass = wrapEthWallet(EthWallet, echo);
-	const wrappedHdkeyClass = wrapHdkey(Hdkey, wrappedEthWalletClass, echo);
+	const wrappedHdkeyClass = wrapHdkey(Hdkey, wrappedEthWalletClass);
 	// TODO impl the same wrapping for provider-engine and thirdparty modules
 
 	return {
