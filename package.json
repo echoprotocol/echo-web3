@@ -10,8 +10,21 @@
     "install": "npm run build",
     "prepublishOnly": "npm run build"
   },
-  "author": "PixelPlex",
-  "license": "ISC",
+  "author": {
+    "name": "PixelPlex, Inc.",
+    "email": "info@pixelplex.io",
+    "url": "https://pixelplex.io"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/echoprotocol/echo-web3/issues"
+  },
+  "keywords": [
+    "blip",
+    "wallet",
+    "echo"
+  ],
+  "homepage": "https://github.com/echoprotocol/echo-web3",
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "echojs-lib": "^1.6.0",
