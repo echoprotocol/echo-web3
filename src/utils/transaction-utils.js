@@ -107,6 +107,43 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 };
 
 /**
+ *
+ * @param {Object} echoTx
+ * @param {Object} contractResult
+ * @param blockNumber
+ * @param txHash
+ * @param txIndex
+ * @return {*}
+ */
+export const mapEchoTxReceiptResultToEth = (echoTx, contractResult, blockNumber, txHash, txIndex) => {
+	const { operations } = echoTx;
+	const [[operationId, targetOperation]] = operations;
+	const [, { tr_receipt: trReceipt }] = contractResult;
+	const { gas_used: gasUsed, bloom, log: [{ address }] } = trReceipt;
+
+	const ethereumTransactionReceipt = {};
+	ethereumTransactionReceipt.blockHash = encodeBlockHash(blockNumber);
+	ethereumTransactionReceipt.blockNumber = blockNumber;
+	ethereumTransactionReceipt.contractAddress = addHexPrefix(address);
+	ethereumTransactionReceipt.gasUsed = gasUsed;
+	ethereumTransactionReceipt.logsBloom = addHexPrefix(bloom);
+	ethereumTransactionReceipt.transactionHash = txHash;
+	ethereumTransactionReceipt.transactionIndex = txIndex;
+
+	if(operationId === constants.OPERATIONS_IDS.CONTRACT_CALL){
+		ethereumTransactionReceipt.to = addressToShortMemo(targetOperation.callee);
+		ethereumTransactionReceipt.from = addressToShortMemo(targetOperation.registrar);
+	} else if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE) {
+		ethereumTransactionReceipt.from = addressToShortMemo(targetOperation.registrar);
+	} else if (operationId === constants.OPERATIONS_IDS.TRANSFER) {
+		ethereumTransactionReceipt.from = addressToShortMemo(targetOperation.from);
+		ethereumTransactionReceipt.to = addressToShortMemo(targetOperation.to);
+	}
+
+	return ethereumTransactionReceipt;
+};
+
+/**
  * @description encode echo transaction identification data to 32b hash
  * hash structure: 0x[hashType 1b][operationId 1b][blockNumber 4b][transactionIndex 2b]000000000000000000000000000000000000000000000000
  * @return {String}
