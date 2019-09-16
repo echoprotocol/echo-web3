@@ -5,7 +5,8 @@ import {
 	GetTransactionCount,
 	GetBlockByNumber,
 	GetCode,
-	BlockNumber
+	BlockNumber,
+	GetLogs
 } from './methods';
 
 class Dispatcher {
@@ -40,6 +41,8 @@ class Dispatcher {
 				return new BlockNumber(this._echo, params, this._asset);
 			case 'eth_getTransactionCount':
 				return new GetTransactionCount(this._echo, params, this._asset);
+			case 'eth_getLogs':
+				return new GetLogs(this._echo, params, this._asset);
 			case 'eth_getCode':
 				return new GetCode(this._echo, params, this._asset);
 			default:

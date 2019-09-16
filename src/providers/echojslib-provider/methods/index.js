@@ -4,6 +4,7 @@ import Call from './call';
 import GetTransactionCount from './get-transaction-count';
 import GetBlockByNumber from './get-block-by-number';
 import GetCode from './get-code';
+import GetLogs from './get-logs';
 import BlockNumber from './block-number';
 
 export {
@@ -13,5 +14,6 @@ export {
 	GetTransactionCount,
 	GetBlockByNumber,
 	GetCode,
-	BlockNumber
+	BlockNumber,
+	GetLogs
 };

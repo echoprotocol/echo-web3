@@ -1,6 +1,6 @@
 import { PrivateKey, serializers } from 'echojs-lib';
 import { mapEthereumTxResultToEcho } from '../utils/transaction-utils';
-import { isValidAddress, isValidData, isValidValue } from '../utils/validators';
+import { isValidAddress, isValidData, isValidHex } from '../utils/validators';
 
 class EthereumjsTx {
 
@@ -42,7 +42,7 @@ class EthereumjsTx {
 		const { from, to, value, data } = ethereumTx;
 		if(from && !isValidAddress(from)) throw new Error('invalid "form" field');
 		if(to && !isValidAddress(to)) throw new Error('invalid "to" field');
-		if(value && !isValidValue(value)) throw new Error('invalid "value" field');
+		if(value && !isValidHex(value)) throw new Error('invalid "value" field');
 		if(data && !isValidData(data)) throw new Error('invalid "data" field');
 	}
 

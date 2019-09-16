@@ -56,7 +56,6 @@ class EchoProvider {
 		const { method } = payload;
 		if(method === 'eth_gasPrice'){
 			return this._wrapAsJsonRpcResponse(payload, '0x0');
-
 		}
 		throw new Error(`The Echo-Web3 provider object does not support synchronous methods like ${method} without a callback parameter`);
 	}
@@ -85,7 +84,9 @@ class EchoProvider {
 				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
 			})
 			.catch(error => {
-				return callback(this._wrapAsJsonRpcResponse(payload, null, error));
+				console.log(error);
+				const formattedError = `Error during execution of ${method}: ${error}`
+				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
 			});
 	}
 
