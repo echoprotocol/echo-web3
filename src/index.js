@@ -88,6 +88,7 @@ const EchoWeb3 = (Web3Class) => {
 
 export {
 	EchoProvider,
+	BridgeProvider,
 	EthereumjsTx
 };
 
