@@ -1,7 +1,10 @@
+import { constants } from 'echojs-lib';
+
 import Method from './method';
 import { decodeTxHash } from '../../../utils/transaction-utils';
 import { encodeBlockHash } from '../../../utils/block-utils';
 import { mapEchoTxReceiptResultToEth } from '../../../utils/transaction-utils';
+import GetLogs from './get-logs';
 
 class GetTransactionReceipt extends Method {
 
@@ -13,12 +16,25 @@ class GetTransactionReceipt extends Method {
 		const { blockNumber, txIndex, txHash } = this._formatInput();
 		const transaction = await this.api.getTransaction(blockNumber, txIndex);
 
-		const { operation_results: [[, resultContractId ]] } = transaction;
-		const contractResult = await this.api.getContractResult(resultContractId);
+		if (!transaction) {
+			return null;
+		}
 
-		return this._formatOutput({ 
+		const { operation_results: [[, resultContractId]], operations: [[operationId]] } = transaction;
+		let bloom = null;
+
+		if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE ||
+		operationId === constants.OPERATIONS_IDS.CONTRACT_CALL ||
+		operationId === constants.OPERATIONS_IDS.CONTRACT_TRANSFER) {
+			const contractResult = await this.api.getContractResult(resultContractId);
+
+			const [, { tr_receipt: trReceipt }] = contractResult;
+			({ bloom } = trReceipt);
+		}
+
+		return await this._formatOutput({ 
 			transaction,
-			contractResult,
+			bloom,
 			blockNumber,
 			txHash,
 			txIndex
@@ -32,6 +48,8 @@ class GetTransactionReceipt extends Method {
 	 */
 	_formatInput() {
 		const [txHash] = this.params;
+		if (typeof txHash !== 'string') throw new Error('txHash is not an string');
+
 		const { blockNumber, txIndex } = decodeTxHash(txHash);
 		const blockHash = encodeBlockHash(blockNumber);
 
@@ -44,9 +62,11 @@ class GetTransactionReceipt extends Method {
 	 * @return {Object}
 	 * @private
 	 */
-	_formatOutput(result) {
-		const { transaction, contractResult, blockNumber, txHash, txIndex } = result;
-		return mapEchoTxReceiptResultToEth(transaction, contractResult, blockNumber, txHash, txIndex);
+	async _formatOutput(result) {
+		const { transaction, blockNumber, bloom, txHash, txIndex } = result;
+		const logs = await (new GetLogs(this.echo, [{ fromBlock: blockNumber, toBlock: blockNumber }])).execute();
+
+		return mapEchoTxReceiptResultToEth(transaction, blockNumber, bloom, logs, txHash, txIndex);
 	}
 
 }

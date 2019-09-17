@@ -109,35 +109,35 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 /**
  *
  * @param {Object} echoTx
- * @param {Object} contractResult
  * @param blockNumber
- * @param txHash
- * @param txIndex
+ * @param bloom
+ * @param logs
+ * @param transactionHash
+ * @param transactionIndex
  * @return {*}
  */
-export const mapEchoTxReceiptResultToEth = (echoTx, contractResult, blockNumber, txHash, txIndex) => {
+export const mapEchoTxReceiptResultToEth = (echoTx, blockNumber, bloom, logs, transactionHash, transactionIndex) => {
 	const { operations } = echoTx;
 	const [[operationId, targetOperation]] = operations;
-	const [, { tr_receipt: trReceipt }] = contractResult;
-	const { gas_used: gasUsed, bloom, log: [{ address }] } = trReceipt;
 
 	const ethereumTransactionReceipt = {};
 	ethereumTransactionReceipt.blockHash = encodeBlockHash(blockNumber);
 	ethereumTransactionReceipt.blockNumber = blockNumber;
-	ethereumTransactionReceipt.contractAddress = addHexPrefix(address);
-	ethereumTransactionReceipt.gasUsed = gasUsed;
-	ethereumTransactionReceipt.logsBloom = addHexPrefix(bloom);
-	ethereumTransactionReceipt.transactionHash = txHash;
-	ethereumTransactionReceipt.transactionIndex = txIndex;
+	ethereumTransactionReceipt.contractAddress = null;
+	ethereumTransactionReceipt.logs = logs;
+	ethereumTransactionReceipt.logsBloom = addHexPrefix(bloom ? bloom : new Array(512 + 1).join(0));
+	ethereumTransactionReceipt.status = addHexPrefix(1);
+	ethereumTransactionReceipt.transactionHash = transactionHash;
+	ethereumTransactionReceipt.transactionIndex = transactionIndex;
 
 	if(operationId === constants.OPERATIONS_IDS.CONTRACT_CALL){
-		ethereumTransactionReceipt.to = addressToShortMemo(targetOperation.callee);
-		ethereumTransactionReceipt.from = addressToShortMemo(targetOperation.registrar);
+		ethereumTransactionReceipt.to = addHexPrefix(addressToShortMemo(targetOperation.callee));
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
 	} else if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE) {
-		ethereumTransactionReceipt.from = addressToShortMemo(targetOperation.registrar);
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
 	} else if (operationId === constants.OPERATIONS_IDS.TRANSFER) {
-		ethereumTransactionReceipt.from = addressToShortMemo(targetOperation.from);
-		ethereumTransactionReceipt.to = addressToShortMemo(targetOperation.to);
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.from));
+		ethereumTransactionReceipt.to = addHexPrefix(addressToShortMemo(targetOperation.to));
 	}
 
 	return ethereumTransactionReceipt;
