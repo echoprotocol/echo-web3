@@ -1,9 +1,7 @@
-import toHex from 'to-hex';
-import Method from './method';
-import { shortMemoToAddress } from '../../../utils/address-utils';
-import { addHexPrefix } from '../../../utils/converters-utils';
-import { ETH_CONSTANTS } from '../../../constants';
+import echo, { serializers } from 'echojs-lib';
 
+import { encodeTxHash } from '../../../utils/transaction-utils';
+import Method from './method';
 class SendRawTransaction extends Method {
 
 	/**
@@ -11,15 +9,23 @@ class SendRawTransaction extends Method {
 	 * @return {Promise}
 	 */
 	async execute() {
+		const transaction = this._formatInput();
+		const bradcastResult = await echo.api.broadcastTransactionWithCallback(transaction, () => {});
 
+		return this._formatOutput(bradcastResult);
 	}
 
 	/**
 	 *
-	 * @return {{accountId: string}}
+	 * @return {Object}
 	 * @private
 	 */
 	_formatInput() {
+		const [rawTx] = this.params;
+		const txBuffer = Buffer.from(rawTx.slice(2), 'hex');
+		const deserializedTx = serializers.signedTransaction.deserialize(txBuffer);
+
+		return deserializedTx;
 	}
 
 	/**
@@ -29,7 +35,9 @@ class SendRawTransaction extends Method {
 	 * @private
 	 */
 	_formatOutput(result) {
+		const [{ block_num: blockNumber, trx_num: txIndex, trx: { operations: [[ operationId ]]} }] = result;
 
+		return encodeTxHash(blockNumber, txIndex, operationId);
 	}
 
 }
