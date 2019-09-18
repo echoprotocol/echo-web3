@@ -1,8 +1,8 @@
 import { constants } from 'echojs-lib';
 
 import Method from './method';
+import { isValidHex } from '../../../utils/validators';
 import { decodeTxHash } from '../../../utils/transaction-utils';
-import { encodeBlockHash } from '../../../utils/block-utils';
 import { mapEchoTxReceiptResultToEth } from '../../../utils/transaction-utils';
 import GetLogs from './get-logs';
 
@@ -48,12 +48,14 @@ class GetTransactionReceipt extends Method {
 	 */
 	_formatInput() {
 		const [txHash] = this.params;
-		if (typeof txHash !== 'string') throw new Error('txHash is not an string');
+
+		if (!isValidHex(txHash)) {
+			throw new Error('transactionHash is not an valid hex');
+		}
 
 		const { blockNumber, txIndex } = decodeTxHash(txHash);
-		const blockHash = encodeBlockHash(blockNumber);
 
-		return { blockNumber, txIndex, blockHash, txHash};
+		return { blockNumber, txIndex, txHash};
 	}
 
 	/**
