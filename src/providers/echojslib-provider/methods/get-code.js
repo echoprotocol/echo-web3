@@ -14,7 +14,7 @@ class GetCode extends Method {
 		const contract = await this.api.getContract(contractAddress);
 
 		if (!contract) {
-			return this._formatOutput();
+			return this._formatOutput('0');
 		}
 
 		const [,{code}] = contract;

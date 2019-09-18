@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import toHex from 'to-hex';
 import { addHexPrefix } from './converters-utils';
 import { isValidIdentificationHash } from './validators';
 import { HASH_IDENTIFIERS } from '../constants';
@@ -41,10 +41,10 @@ export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects
 
 	const blockHash = encodeBlockHash(blockNumber);
 	const ethereumBlock = {};
-	ethereumBlock.difficulty = 0;
+	ethereumBlock.difficulty = addHexPrefix(0);
 	ethereumBlock.extraData = addHexPrefix();
-	ethereumBlock.gasLimit = 0;
-	ethereumBlock.gasUsed = 0;
+	ethereumBlock.gasLimit = addHexPrefix(0);
+	ethereumBlock.gasUsed = addHexPrefix(0);
 	ethereumBlock.hash = blockHash;
 	ethereumBlock.logsBloom = addHexPrefix();
 	ethereumBlock.miner = addHexPrefix(addressToShortMemo(account));
@@ -56,8 +56,8 @@ export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects
 	ethereumBlock.sha3Uncles = addHexPrefix();
 	ethereumBlock.size = JSON.stringify(echoBlock).length; // TODO need to serialize to buffer ang get the length from it
 	ethereumBlock.stateRoot = addHexPrefix();
-	ethereumBlock.timestamp = new Date(timestamp).getTime();
-	ethereumBlock.totalDifficulty = 0;
+	ethereumBlock.timestamp = parseInt(new Date(timestamp).getTime() / 1000);
+	ethereumBlock.totalDifficulty = addHexPrefix(0);
 	ethereumBlock.transactionsRoot = addHexPrefix(txRoot);
 	ethereumBlock.uncles = [];
 	if (includeTxObjects) {

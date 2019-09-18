@@ -25,7 +25,7 @@ export const mapEthTxForCall = (ethTx) => {
  * @param {Asset} asset
  * @return {{options, operationId}}
  */
-export const mapEthereumTxResultToEcho = (ethTx, asset) => {
+export const mapEthereumTxToEcho = (ethTx, asset) => {
 	const { from, to, data, value } = ethTx;
 	let operationId = null;
 
@@ -36,9 +36,9 @@ export const mapEthereumTxResultToEcho = (ethTx, asset) => {
 	};
 
 	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
-	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toNumber();
+	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toNumber() || 0;
 
-	if (from && to && data) {
+	if (to && data) {
 		options.callee = shortMemoToAddress(to);
 		options.registrar = shortMemoToAddress(from);
 		options.code = data;
