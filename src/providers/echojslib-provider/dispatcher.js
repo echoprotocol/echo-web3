@@ -3,6 +3,7 @@ import {
 	GasPrice,
 	Call,
 	GetTransactionCount,
+	GetTransactionReceipt,
 	GetBlockByNumber,
 	GetCode,
 	BlockNumber,
@@ -44,6 +45,8 @@ class Dispatcher {
 				return new GetTransactionCount(this._echo, params, this._asset);
 			case 'eth_getLogs':
 				return new GetLogs(this._echo, params, this._asset);
+			case 'eth_getTransactionReceipt':
+				return new GetTransactionReceipt(this._echo, params, this._asset);
 			case 'eth_getCode':
 				return new GetCode(this._echo, params, this._asset);
 			case 'eth_sendRawTransaction':

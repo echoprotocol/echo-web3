@@ -107,6 +107,44 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 };
 
 /**
+ *
+ * @param {Object} echoTx
+ * @param blockNumber
+ * @param contractAddress
+ * @param bloom
+ * @param logs
+ * @param transactionHash
+ * @param transactionIndex
+ * @return {*}
+ */
+export const mapEchoTxReceiptResultToEth = (echoTx, blockNumber, newAddress, bloom, logs, transactionHash, transactionIndex) => {
+	const { operations } = echoTx;
+	const [[operationId, targetOperation]] = operations;
+
+	const ethereumTransactionReceipt = {};
+	ethereumTransactionReceipt.blockHash = encodeBlockHash(blockNumber);
+	ethereumTransactionReceipt.blockNumber = blockNumber;
+	ethereumTransactionReceipt.contractAddress = newAddress ? addHexPrefix(newAddress) : newAddress;
+	ethereumTransactionReceipt.logs = logs;
+	ethereumTransactionReceipt.logsBloom = addHexPrefix(bloom ? bloom : new Array(512 + 1).join(0));
+	ethereumTransactionReceipt.status = addHexPrefix(1);
+	ethereumTransactionReceipt.transactionHash = transactionHash;
+	ethereumTransactionReceipt.transactionIndex = transactionIndex;
+
+	if(operationId === constants.OPERATIONS_IDS.CONTRACT_CALL){
+		ethereumTransactionReceipt.to = addHexPrefix(addressToShortMemo(targetOperation.callee));
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
+	} else if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE) {
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
+	} else if (operationId === constants.OPERATIONS_IDS.TRANSFER) {
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.from));
+		ethereumTransactionReceipt.to = addHexPrefix(addressToShortMemo(targetOperation.to));
+	}
+
+	return ethereumTransactionReceipt;
+};
+
+/**
  * @description encode echo transaction identification data to 32b hash
  * hash structure: 0x[hashType 1b][operationId 1b][blockNumber 4b][transactionIndex 2b]000000000000000000000000000000000000000000000000
  * @return {String}
