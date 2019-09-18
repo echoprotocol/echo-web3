@@ -6,6 +6,7 @@ import GetBlockByNumber from './get-block-by-number';
 import GetCode from './get-code';
 import GetLogs from './get-logs';
 import BlockNumber from './block-number';
+import SendRawTransaction from './send-raw-transaction';
 
 export {
 	GetBalance,
@@ -15,5 +16,6 @@ export {
 	GetBlockByNumber,
 	GetCode,
 	BlockNumber,
-	GetLogs
+	GetLogs,
+	SendRawTransaction
 };
