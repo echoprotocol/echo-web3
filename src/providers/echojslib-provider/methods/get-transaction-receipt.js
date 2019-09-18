@@ -20,22 +20,26 @@ class GetTransactionReceipt extends Method {
 			return null;
 		}
 
-		const { operation_results: [[, resultContractId]], operations: [[operationId]] } = transaction;
+		const { operation_results: [[, opertaionResultsId]], operations: [[operationId]] } = transaction;
 		let bloom = null;
+		let contractAddress = null;
 
 		if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE ||
 		operationId === constants.OPERATIONS_IDS.CONTRACT_CALL ||
 		operationId === constants.OPERATIONS_IDS.CONTRACT_TRANSFER) {
-			const contractResult = await this.api.getContractResult(resultContractId);
-
+			const contractResult = await this.api.getContractResult(opertaionResultsId);
 			const [, { tr_receipt: trReceipt }] = contractResult;
+			const { log: [{ address }]} = trReceipt;
 			({ bloom } = trReceipt);
+			contractAddress = address;
 		}
+
 
 		return await this._formatOutput({ 
 			transaction,
-			bloom,
 			blockNumber,
+			contractAddress,
+			bloom,
 			txHash,
 			txIndex
 		});
@@ -50,7 +54,7 @@ class GetTransactionReceipt extends Method {
 		const [txHash] = this.params;
 
 		if (!isValidHex(txHash)) {
-			throw new Error('transactionHash is not an valid hex');
+			throw new Error('transactionHash is not a valid hex');
 		}
 
 		const { blockNumber, txIndex } = decodeTxHash(txHash);
@@ -65,10 +69,10 @@ class GetTransactionReceipt extends Method {
 	 * @private
 	 */
 	async _formatOutput(result) {
-		const { transaction, blockNumber, bloom, txHash, txIndex } = result;
+		const { transaction, blockNumber, contractAddress, bloom, txHash, txIndex } = result;
 		const logs = await (new GetLogs(this.echo, [{ fromBlock: blockNumber, toBlock: blockNumber }])).execute();
 
-		return mapEchoTxReceiptResultToEth(transaction, blockNumber, bloom, logs, txHash, txIndex);
+		return mapEchoTxReceiptResultToEth(transaction, blockNumber, contractAddress, bloom, logs, txHash, txIndex);
 	}
 
 }
