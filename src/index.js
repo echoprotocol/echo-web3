@@ -5,6 +5,8 @@ import BridgeProvider from './providers/bridge-provider';
 import EthereumjsTx from './echo-ethereumjs-tx';
 import { getWrappedEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
+import * as transactionUtils from './utils/transaction-utils';
+
 
 /** @typedef {
 *	{
@@ -56,6 +58,7 @@ const EchoWeb3 = (Web3Class) => {
 			const { ethWallet, hdkey } = getWrappedEthWalletLib(provider.echo);
 			this._ethWallet = ethWallet;
 			this._hdkey = hdkey;
+
 		}
 
 		get ethWallet() {
@@ -65,6 +68,7 @@ const EchoWeb3 = (Web3Class) => {
 		get hdKey() {
 			return this._hdkey;
 		}
+
 
 		/**
 		 *
@@ -89,7 +93,8 @@ const EchoWeb3 = (Web3Class) => {
 export {
 	EchoProvider,
 	BridgeProvider,
-	EthereumjsTx
+	EthereumjsTx,
+	transactionUtils
 };
 
 export default EchoWeb3;

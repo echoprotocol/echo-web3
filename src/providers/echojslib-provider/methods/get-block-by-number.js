@@ -1,6 +1,7 @@
 import Method from './method';
 import { toDecimal } from '../../../utils/converters-utils';
 import { mapEchoBlockResultToEth } from '../../../utils/block-utils';
+import { isValidHex } from '../../../utils/validators';
 
 class GetBlockByNumber extends Method {
 
@@ -27,6 +28,10 @@ class GetBlockByNumber extends Method {
 	 */
 	_formatInput() {
 		const [blockNumberHex, includeTx] = this.params;
+		if(!isValidHex(blockNumberHex)){
+			throw new Error('invalid block number');
+		}
+
 		const blockNumber = toDecimal(blockNumberHex);
 		return { blockNumber, includeTx };
 	}

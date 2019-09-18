@@ -2,7 +2,6 @@ import toHex from 'to-hex';
 import Method from './method';
 import { shortMemoToAddress } from '../../../utils/address-utils';
 import { addHexPrefix } from '../../../utils/converters-utils';
-import { ETH_CONSTANTS } from '../../../constants';
 
 class GetTransactionCount extends Method {
 
@@ -30,15 +29,8 @@ class GetTransactionCount extends Method {
 	 * @private
 	 */
 	_formatInput() {
-		//TODO default block?
-		const [ethAddress, defaultBlock] = this.params;
-
-		if(defaultBlock !== ETH_CONSTANTS.DEFAULT_BLOCK){
-			console.warn('method doesn\'t support "defaultBlock" parameter');
-		}
-
+		const [ethAddress] = this.params;
 		const accountId = shortMemoToAddress(ethAddress.slice(2));
-
 		return { accountId };
 	}
 

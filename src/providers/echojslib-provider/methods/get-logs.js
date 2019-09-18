@@ -22,6 +22,10 @@ class GetLogs extends Method {
 		const logsIdentifiersArray = [];
 
 		blocks.forEach((block) => {
+			if(!block){
+				return;
+			}
+
 			// get all transaction from block
 			const { transactions, round: blockNumber } = block;
 
@@ -142,7 +146,7 @@ class GetLogs extends Method {
 				transactionHash: encodeTxHash(blockNumber, txIndex, operationId),
 				txIndex: addHexPrefix(txIndex.toString(16))
 			};
-		})
+		});
 	}
 
 

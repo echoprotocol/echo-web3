@@ -1,5 +1,5 @@
-import { PrivateKey, hash } from 'echojs-lib';
-import { addressToShortMemo } from '../utils/address-utils';
+import { PrivateKey } from 'echojs-lib';
+import { addressToShortMemo, generateAccountNameByPublicKey } from '../utils/address-utils';
 import { ECHO_NAME_PREFIX } from '../constants';
 
 /**
@@ -23,7 +23,7 @@ const wrapEthWallet = (OriginalEthWallet, echo) => {
 		async getPrivateKey() {
 			const echoPrivateKey = PrivateKey.fromBuffer(this._privKey);
 			const publicKeyString = echoPrivateKey.toPublicKey().toPublicKeyString();
-			const accountName = `${ECHO_NAME_PREFIX}${hash.sha256(publicKeyString, 'hex').slice(0, 20)}`;
+			const accountName = generateAccountNameByPublicKey(publicKeyString);
 			const account = await echo.api.getAccountByName(accountName);
 			if(!account){
 				await echo.api.registerAccount(
@@ -42,7 +42,7 @@ const wrapEthWallet = (OriginalEthWallet, echo) => {
 		async getAddress() {
 			const echoPrivateKey = PrivateKey.fromBuffer(this._privKey);
 			const publicKeyString = echoPrivateKey.toPublicKey().toPublicKeyString();
-			const accountName = `${ECHO_NAME_PREFIX}${hash.sha256(publicKeyString, 'hex').slice(0, 20)}`;
+			const accountName = generateAccountNameByPublicKey(publicKeyString);
 			const account = await echo.api.getAccountByName(accountName);
 			if(!account){
 				throw new Error('account doesn\'t exist');
