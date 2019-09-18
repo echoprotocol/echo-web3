@@ -22,23 +22,25 @@ class GetTransactionReceipt extends Method {
 
 		const { operation_results: [[, opertaionResultsId]], operations: [[operationId]] } = transaction;
 		let bloom = null;
-		let contractAddress = null;
+		let newAddress = null;
 
 		if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE ||
 		operationId === constants.OPERATIONS_IDS.CONTRACT_CALL ||
 		operationId === constants.OPERATIONS_IDS.CONTRACT_TRANSFER) {
 			const contractResult = await this.api.getContractResult(opertaionResultsId);
-			const [, { tr_receipt: trReceipt }] = contractResult;
-			const { log: [{ address }]} = trReceipt;
+			const [, { tr_receipt: trReceipt, exec_res: execRes }] = contractResult;
 			({ bloom } = trReceipt);
-			contractAddress = address;
+
+			if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE) {
+				({ new_address: newAddress} = execRes);
+			}
 		}
 
 
 		return await this._formatOutput({ 
 			transaction,
 			blockNumber,
-			contractAddress,
+			newAddress,
 			bloom,
 			txHash,
 			txIndex
@@ -69,10 +71,10 @@ class GetTransactionReceipt extends Method {
 	 * @private
 	 */
 	async _formatOutput(result) {
-		const { transaction, blockNumber, contractAddress, bloom, txHash, txIndex } = result;
+		const { transaction, blockNumber, newAddress, bloom, txHash, txIndex } = result;
 		const logs = await (new GetLogs(this.echo, [{ fromBlock: blockNumber, toBlock: blockNumber }])).execute();
 
-		return mapEchoTxReceiptResultToEth(transaction, blockNumber, contractAddress, bloom, logs, txHash, txIndex);
+		return mapEchoTxReceiptResultToEth(transaction, blockNumber, newAddress, bloom, logs, txHash, txIndex);
 	}
 
 }
