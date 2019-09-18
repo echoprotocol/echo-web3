@@ -1,6 +1,8 @@
 
 import Dispatcher from './dispatcher';
 import { ECHO_CONSTANTS } from '../../constants';
+import { addressToShortMemo } from '../../utils/address-utils';
+import { addHexPrefix } from '../../utils/converters-utils';
 
 class BridgeProvider {
 
@@ -25,7 +27,7 @@ class BridgeProvider {
 	}
 
 	async init() {
-		await this.echo.extension.getAccess();
+		await this.extension.getAccess();
 		// asset info initialization on provider init
 		if (this.echo.isConnected) {
 			await this.echo.disconnect();
@@ -34,6 +36,7 @@ class BridgeProvider {
 		await this.echo.connect();
 
 		const assetObject = await this.echo.api.getObject(this.asset.id);
+
 		if (!assetObject) {
 			throw new Error(`unknown asset id: ${this.asset.id}`);
 		}
@@ -61,9 +64,12 @@ class BridgeProvider {
 	 * @param payload
 	 */
 	send(payload) {
+		console.log(payload)
 		const { method } = payload;
 		if(method === 'eth_gasPrice'){
 			return this._wrapAsJsonRpcResponse(payload, '0x0');
+		} else if (method === 'eth_accounts') {
+			return this._wrapAsJsonRpcResponse(payload, [this.extension.activeAddress]);
 		}
 		throw new Error(`The Echo-Web3 provider object does not support synchronous methods like ${method} without a callback parameter`);
 	}
@@ -80,7 +86,6 @@ class BridgeProvider {
 			return callback(new Error('Init provider first'));
 		}
 		const { method, params } = payload;
-
 		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
 		if (!echoSpyMethod) {
@@ -96,6 +101,11 @@ class BridgeProvider {
 				const formattedError = `Error during execution of ${method}: ${error}`;
 				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
 			});
+	}
+
+	async enable() {
+		const accounts = await this.extension.getAccounts();
+		return accounts.map((account) => addHexPrefix(addressToShortMemo(account.id)));
 	}
 
 	disconnect() {
