@@ -1,5 +1,6 @@
 import echo, { serializers } from 'echojs-lib';
 
+import { isValidHex } from '../../../utils/validators';
 import { encodeTxHash } from '../../../utils/transaction-utils';
 import Method from './method';
 class SendRawTransaction extends Method {
@@ -10,9 +11,9 @@ class SendRawTransaction extends Method {
 	 */
 	async execute() {
 		const transaction = this._formatInput();
-		const bradcastResult = await echo.api.broadcastTransactionWithCallback(transaction, () => {});
+		const broadcastResult = await echo.api.broadcastTransactionWithCallback(transaction, () => {});
 
-		return this._formatOutput(bradcastResult);
+		return this._formatOutput(broadcastResult);
 	}
 
 	/**
@@ -22,6 +23,11 @@ class SendRawTransaction extends Method {
 	 */
 	_formatInput() {
 		const [rawTx] = this.params;
+
+		if (!isValidHex(rawTx)) {
+			throw new Error('rawTx is not a valid hex');
+		}
+
 		const txBuffer = Buffer.from(rawTx.slice(2), 'hex');
 		const deserializedTx = serializers.signedTransaction.deserialize(txBuffer);
 
