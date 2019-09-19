@@ -8,18 +8,22 @@ import {
 	BlockNumber,
 	GetLogs,
 	SendRawTransaction
-} from './methods';
+} from '../methods';
 
-class Dispatcher {
+import { NetVersionBridge, AccountsBridge } from './methods';
+
+class BridgeDispatcher {
 
 	/**
 	 *
+	 * @param extension
 	 * @param {Echo} echoInstance
 	 * @param {Asset} asset
 	 */
-	constructor(echoInstance, asset) {
-		this._asset = asset;
+	constructor(extension, echoInstance, asset) {
+		this._extension = extension;
 		this._echo = echoInstance;
+		this._asset = asset;
 	}
 
 	/**
@@ -36,8 +40,6 @@ class Dispatcher {
 				return new GetBlockByNumber(this._echo, params, this._asset);
 			case 'eth_getBalance':
 				return new GetBalance(this._echo, params, this._asset);
-			case 'eth_gasPrice':
-				return new GasPrice(this._echo, params, this._asset);
 			case 'eth_blockNumber':
 				return new BlockNumber(this._echo, params, this._asset);
 			case 'eth_getTransactionCount':
@@ -48,6 +50,19 @@ class Dispatcher {
 				return new GetCode(this._echo, params, this._asset);
 			case 'eth_sendRawTransaction':
 				return new SendRawTransaction(this._echo, params, this._asset);
+			case 'net_version':
+				return new NetVersionBridge(this._extension, this._echo, params, this._asset);
+			default:
+				return null;
+		}
+	}
+
+	resolveSyncMethod(method, params) {
+		switch (method) {
+			case 'eth_accounts':
+				return new AccountsBridge(this._extension, this._echo, params, this._asset);
+			case 'eth_gasPrice':
+				return new GasPrice(this._echo, params, this._asset);
 			default:
 				return null;
 		}
@@ -55,4 +70,4 @@ class Dispatcher {
 
 }
 
-export default Dispatcher;
+export default BridgeDispatcher;

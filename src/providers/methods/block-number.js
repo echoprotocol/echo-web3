@@ -1,4 +1,4 @@
-import Method from './method';
+import Method from './abstract/method';
 
 class BlockNumber extends Method {
 

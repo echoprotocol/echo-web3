@@ -47,8 +47,8 @@ const EchoWeb3 = (Web3Class) => {
 			if (semver.lt(this.version.api, constants.MIN_WEB3_API_VERSION))
 			{throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);}
 
-			if (provider.isEchoProvider) {
-				// set provider if web3 version isn't least than supported
+			if (provider.isEchoProvider || provider.isBridgeProvider) {
+				// set provider if web3 version isn't least than supported and provider can works with echo network
 				this.setProvider(provider);
 			} else {
 				throw new Error('You can pass only Echo compatibility provider');

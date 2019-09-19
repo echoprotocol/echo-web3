@@ -1,5 +1,4 @@
-
-import Dispatcher from './dispatcher';
+import BridgeDispatcher from './dispatcher';
 import { ECHO_CONSTANTS } from '../../constants';
 import { addressToShortMemo } from '../../utils/address-utils';
 import { addHexPrefix } from '../../utils/converters-utils';
@@ -12,7 +11,7 @@ class BridgeProvider {
 	 * @param {ProviderOptions} options
 	 */
 	constructor(options = {}) {
-		this.isEchoProvider = true;
+		this.isBridgeProvider = true;
 		this._echo = window.echojslib.echo;
 		this._extension = window.echojslib.extension;
 
@@ -27,12 +26,21 @@ class BridgeProvider {
 	}
 
 	async init() {
-		await this.extension.getAccess();
+		// get access to echo instance and extension methods by clicking to Approve button in Bridge UI
+
+		try {
+			await this.extension.getAccess();
+		} catch (e) {
+			console.warn('The access to Bridge extension has been rejected previously. Clear your Bridge application data and try again.');
+			throw e;
+		}
 		// asset info initialization on provider init
 		if (this.echo.isConnected) {
 			await this.echo.disconnect();
 		}
-      
+
+
+		// connecting to Bridge's extension network
 		await this.echo.connect();
 
 		const assetObject = await this.echo.api.getObject(this.asset.id);
@@ -43,8 +51,8 @@ class BridgeProvider {
 
 		this.asset.precision = assetObject.precision;
 
-		/** @type {Dispatcher}*/
-		this._dispatcher = new Dispatcher(this.echo, this.asset);
+		/** @type {BridgeDispatcher}*/
+		this._dispatcher = new BridgeDispatcher(this._extension, this._echo, this.asset);
 	}
 
 	/**
@@ -64,14 +72,27 @@ class BridgeProvider {
 	 * @param payload
 	 */
 	send(payload) {
-		console.log(payload)
-		const { method } = payload;
-		if(method === 'eth_gasPrice'){
-			return this._wrapAsJsonRpcResponse(payload, '0x0');
-		} else if (method === 'eth_accounts') {
-			return this._wrapAsJsonRpcResponse(payload, [this.extension.activeAddress]);
+		console.log('send');
+		console.log(payload);
+
+		if (!this._dispatcher) {
+			return new Error('Init provider first');
 		}
-		throw new Error(`The Echo-Web3 provider object does not support synchronous methods like ${method} without a callback parameter`);
+
+		const { method, params } = payload;
+		const echoSpyMethod = this._dispatcher.resolveSyncMethod(method, params);
+
+		if (!echoSpyMethod) {
+			throw new Error(`method ${method} not implemented, params ${JSON.stringify(params, null, 1)}`);
+		}
+
+		try {
+			const result = echoSpyMethod.execute();
+			return this._wrapAsJsonRpcResponse(payload, result);
+		} catch (error) {
+			const formattedError = `Error during execution of ${method}: ${error}`;
+			return this._wrapAsJsonRpcResponse(payload, null, formattedError);
+		}
 	}
 
 	/**
@@ -82,6 +103,9 @@ class BridgeProvider {
 	 * @param {Function} callback triggered on end with (err, result)
 	 */
 	sendAsync(payload, callback) {
+		console.log('sendAsync');
+		console.log(payload);
+
 		if (!this._dispatcher) {
 			return callback(new Error('Init provider first'));
 		}

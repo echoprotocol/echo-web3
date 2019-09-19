@@ -1,6 +1,6 @@
-import Method from './method';
-import { shortMemoToAddress } from '../../../utils/address-utils';
-import { assetValueToWei } from '../../../utils/converters-utils';
+import Method from './abstract/method';
+import { shortMemoToAddress } from '../../utils/address-utils';
+import { assetValueToWei } from '../../utils/converters-utils';
 
 class GetBalance extends Method {
 

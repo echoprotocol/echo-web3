@@ -1,12 +1,13 @@
-import Method from './method';
+import Method from './abstract/method';
+import { addHexPrefix } from '../../utils/converters-utils';
 
 class GetBalance extends Method {
 
 	/**
 	 * make calculation and api call echo
-	 * @return {Promise}
+	 * @return {String}
 	 */
-	async execute() {
+	execute() {
 		return this._formatOutput(20000000000);
 	}
 
@@ -17,7 +18,7 @@ class GetBalance extends Method {
 	 * @private
 	 */
 	_formatOutput(result) {
-		return this.web3Utils.toHex(result);
+		return addHexPrefix(result.toString(16));
 	}
 
 }

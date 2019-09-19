@@ -1,7 +1,7 @@
 import toHex from 'to-hex';
-import Method from './method';
-import { shortMemoToAddress } from '../../../utils/address-utils';
-import { addHexPrefix } from '../../../utils/converters-utils';
+import Method from './abstract/method';
+import { shortMemoToAddress } from '../../utils/address-utils';
+import { addHexPrefix } from '../../utils/converters-utils';
 
 class GetTransactionCount extends Method {
 

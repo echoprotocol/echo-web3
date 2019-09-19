@@ -9,7 +9,7 @@ import {
 	BlockNumber,
 	GetLogs,
 	SendRawTransaction
-} from './methods';
+} from '../methods';
 
 class Dispatcher {
 
@@ -51,6 +51,16 @@ class Dispatcher {
 				return new GetCode(this._echo, params, this._asset);
 			case 'eth_sendRawTransaction':
 				return new SendRawTransaction(this._echo, params, this._asset);
+			default:
+				return null;
+		}
+	}
+
+
+	resolveSyncMethod(method, params) {
+		switch (method) {
+			case 'eth_gasPrice':
+				return new GasPrice(this._echo, params, this._asset);
 			default:
 				return null;
 		}

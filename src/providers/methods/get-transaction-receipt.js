@@ -1,9 +1,9 @@
 import { constants } from 'echojs-lib';
 
-import Method from './method';
-import { isValidHex } from '../../../utils/validators';
-import { decodeTxHash } from '../../../utils/transaction-utils';
-import { mapEchoTxReceiptResultToEth } from '../../../utils/transaction-utils';
+import Method from './abstract/method';
+import { isValidHex } from '../../utils/validators';
+import { decodeTxHash } from '../../utils/transaction-utils';
+import { mapEchoTxReceiptResultToEth } from '../../utils/transaction-utils';
 import GetLogs from './get-logs';
 
 class GetTransactionReceipt extends Method {

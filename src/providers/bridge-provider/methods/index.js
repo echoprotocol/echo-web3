@@ -1,21 +1,7 @@
-import GetBalance from './get-balance';
-import GasPrice from './gas-price';
-import Call from './call';
-import GetTransactionCount from './get-transaction-count';
-import GetBlockByNumber from './get-block-by-number';
-import GetCode from './get-code';
-import GetLogs from './get-logs';
-import BlockNumber from './block-number';
-import SendRawTransaction from './send-raw-transaction';
+import NetVersionBridge from './net-version.js';
+import AccountsBridge from './accounts.js';
 
 export {
-	GetBalance,
-	GasPrice,
-	Call,
-	GetTransactionCount,
-	GetBlockByNumber,
-	GetCode,
-	BlockNumber,
-	GetLogs,
-	SendRawTransaction
+	NetVersionBridge,
+	AccountsBridge
 };
