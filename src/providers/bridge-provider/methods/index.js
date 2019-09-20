@@ -1,7 +1,9 @@
-import NetVersionBridge from './net-version.js';
+import GetNetwork from './net-version.js';
 import AccountsBridge from './accounts.js';
+import SendTransactionBridge from './send-transaction';
 
 export {
-	NetVersionBridge,
-	AccountsBridge
+	GetNetwork,
+	AccountsBridge,
+	SendTransactionBridge
 };

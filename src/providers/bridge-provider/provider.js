@@ -11,9 +11,15 @@ class BridgeProvider {
 	 * @param {ProviderOptions} options
 	 */
 	constructor(options = {}) {
-		this.isBridgeProvider = true;
-		this._echo = window.echojslib.echo;
-		this._extension = window.echojslib.extension;
+		this.isMetaMask = true;
+		this.isBridgeCore = true;
+		const { echojslib } = window;
+		if (!(echojslib && echojslib.isEchoBridge)) {
+			throw new Error('Bridge extension wasn\'t provided');
+		}
+
+		this._echo = echojslib.echo;
+		this._extension = echojslib.extension;
 
 		this._dispatcher = null;
 
@@ -27,12 +33,11 @@ class BridgeProvider {
 
 	async init() {
 		// get access to echo instance and extension methods by clicking to Approve button in Bridge UI
-
 		try {
 			await this.extension.getAccess();
-		} catch (e) {
+		} catch (error) {
 			console.warn('The access to Bridge extension has been rejected previously. Clear your Bridge application data and try again.');
-			throw e;
+			throw error;
 		}
 		// asset info initialization on provider init
 		if (this.echo.isConnected) {
@@ -72,9 +77,6 @@ class BridgeProvider {
 	 * @param payload
 	 */
 	send(payload) {
-		console.log('send');
-		console.log(payload);
-
 		if (!this._dispatcher) {
 			return new Error('Init provider first');
 		}
@@ -103,12 +105,12 @@ class BridgeProvider {
 	 * @param {Function} callback triggered on end with (err, result)
 	 */
 	sendAsync(payload, callback) {
-		console.log('sendAsync');
-		console.log(payload);
-
 		if (!this._dispatcher) {
-			return callback(new Error('Init provider first'));
+			if (!this._dispatcher) {
+				return callback(new Error('Init provider first'));
+			}
 		}
+
 		const { method, params } = payload;
 		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
@@ -117,14 +119,13 @@ class BridgeProvider {
 		}
 
 		echoSpyMethod.execute()
-			.then(result => {
-				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
-			})
-			.catch(error => {
-				console.log(error);
-				const formattedError = `Error during execution of ${method}: ${error}`;
-				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
-			});
+		.then(result => {
+			return callback(null, this._wrapAsJsonRpcResponse(payload, result));
+		})
+		.catch(error => {
+			const formattedError = `Error during execution of ${method}: ${error}`;
+			return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
+		});
 	}
 
 	async enable() {

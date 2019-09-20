@@ -1,5 +1,5 @@
 import { PrivateKey, serializers } from 'echojs-lib';
-import { mapEthereumTxToEcho } from '../utils/transaction-utils';
+import { mapEthTxToEcho } from '../utils/transaction-utils';
 import { isValidAddress, isValidData, isValidHex } from '../utils/validators';
 import { generateAccountNameByPublicKey } from '../utils/address-utils';
 
@@ -14,7 +14,7 @@ class EthereumjsTx {
 	constructor(ethereumTx, echo, asset) {
 		this.echo = echo;
 		this._validateTransaction(ethereumTx);
-		const { operationId, options } = mapEthereumTxToEcho(ethereumTx, asset);
+		const { operationId, options } = mapEthTxToEcho(ethereumTx, asset);
 		this._options = options;
 		this._operationId = operationId;
 		/** @type {Transaction} */

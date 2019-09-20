@@ -138,12 +138,12 @@ class GetLogs extends Method {
 
 			return {
 				blockNumber: addHexPrefix(blockNumber.toString(16)),
-				blockHash: encodeBlockHash(blockNumber),
+				blockHash: addHexPrefix(encodeBlockHash(blockNumber)),
 				logIndex: addHexPrefix(logIndex.toString(16)),
 				data: addHexPrefix(data),
 				topics: topics.map((log)=>addHexPrefix(log)),
 				address: addHexPrefix(address),
-				transactionHash: encodeTxHash(blockNumber, txIndex, operationId),
+				transactionHash: addHexPrefix(encodeTxHash(blockNumber, txIndex, operationId)),
 				txIndex: addHexPrefix(txIndex.toString(16))
 			};
 		});

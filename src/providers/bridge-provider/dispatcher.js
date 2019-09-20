@@ -3,6 +3,7 @@ import {
 	GasPrice,
 	Call,
 	GetTransactionCount,
+	GetTransactionReceipt,
 	GetBlockByNumber,
 	GetCode,
 	BlockNumber,
@@ -10,7 +11,7 @@ import {
 	SendRawTransaction
 } from '../methods';
 
-import { NetVersionBridge, AccountsBridge } from './methods';
+import { GetNetwork, AccountsBridge, SendTransactionBridge } from './methods';
 
 class BridgeDispatcher {
 
@@ -34,6 +35,8 @@ class BridgeDispatcher {
 	 */
 	resolveMethod(method, params) {
 		switch (method) {
+			case 'eth_sendTransaction':
+				return new SendTransactionBridge(this._extension, this._echo, params, this._asset);
 			case 'eth_call':
 				return new Call(this._echo, params, this._asset);
 			case 'eth_getBlockByNumber':
@@ -44,6 +47,8 @@ class BridgeDispatcher {
 				return new BlockNumber(this._echo, params, this._asset);
 			case 'eth_getTransactionCount':
 				return new GetTransactionCount(this._echo, params, this._asset);
+			case 'eth_getTransactionReceipt':
+				return new GetTransactionReceipt(this._echo, params, this._asset);
 			case 'eth_getLogs':
 				return new GetLogs(this._echo, params, this._asset);
 			case 'eth_getCode':
@@ -51,7 +56,7 @@ class BridgeDispatcher {
 			case 'eth_sendRawTransaction':
 				return new SendRawTransaction(this._echo, params, this._asset);
 			case 'net_version':
-				return new NetVersionBridge(this._extension, this._echo, params, this._asset);
+				return new GetNetwork(this._extension, this._echo, params, this._asset);
 			default:
 				return null;
 		}

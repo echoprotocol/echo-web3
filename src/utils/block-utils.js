@@ -1,4 +1,3 @@
-import toHex from 'to-hex';
 import { addHexPrefix } from './converters-utils';
 import { isValidIdentificationHash } from './validators';
 import { HASH_IDENTIFIERS } from '../constants';
@@ -7,7 +6,7 @@ import { addressToShortMemo } from './address-utils';
 
 /**
  * @description encode echo block number to 32b hash
- * hash structure: 0x[hashType 1b][blockNumber 4b]000000000000000000000000000000000000000000000000000000
+ * hash structure: [hashType 1b][blockNumber 4b]000000000000000000000000000000000000000000000000000000
  * @param {Number} blockNumber
  * @return {String}
  */
@@ -15,7 +14,7 @@ export const encodeBlockHash = (blockNumber) => {
 	const hashBuffer = Buffer.alloc(32);
 	hashBuffer.writeUInt8(HASH_IDENTIFIERS.BLOCK, 0);
 	hashBuffer.writeUInt32LE(blockNumber, 1);
-	return addHexPrefix(hashBuffer.toString('hex'));
+	return hashBuffer.toString('hex');
 };
 
 /**
@@ -39,7 +38,7 @@ export const decodeBlockHash = (hash) => {
 export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects, asset) => {
 	const { transactions, transaction_merkle_root: txRoot, account, timestamp } = echoBlock;
 
-	const blockHash = encodeBlockHash(blockNumber);
+	const blockHash = addHexPrefix(encodeBlockHash(blockNumber));
 	const ethereumBlock = {};
 	ethereumBlock.difficulty = addHexPrefix(0);
 	ethereumBlock.extraData = addHexPrefix();
@@ -51,7 +50,7 @@ export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects
 	ethereumBlock.mixHash = addHexPrefix();
 	ethereumBlock.nonce = addHexPrefix();
 	ethereumBlock.number = blockNumber;
-	ethereumBlock.parentHash = encodeBlockHash(blockNumber - 1);
+	ethereumBlock.parentHash = addHexPrefix(encodeBlockHash(blockNumber - 1));
 	ethereumBlock.receiptsRoot = addHexPrefix();
 	ethereumBlock.sha3Uncles = addHexPrefix();
 	ethereumBlock.size = JSON.stringify(echoBlock).length; // TODO need to serialize to buffer ang get the length from it
@@ -67,7 +66,7 @@ export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects
 		// fill the transaction field by transaction's hashes
 		ethereumBlock.transactions = transactions.map((echoTx, i) => {
 			const [[operationId]] = echoTx.operations;
-			return encodeTxHash(blockNumber, i, operationId);
+			return addHexPrefix(encodeTxHash(blockNumber, i, operationId));
 		});
 	}
 

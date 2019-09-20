@@ -25,7 +25,7 @@ export const mapEthTxForCall = (ethTx) => {
  * @param {Asset} asset
  * @return {{options, operationId}}
  */
-export const mapEthereumTxToEcho = (ethTx, asset) => {
+export const mapEthTxToEcho = (ethTx, asset) => {
 	const { from, to, data, value } = ethTx;
 	let operationId = null;
 
@@ -73,11 +73,11 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 	const [[operationId, targetOperation]] = operations;
 
 	const ethereumTransaction = {};
-	ethereumTransaction.blockHash = encodeBlockHash(blockNumber);
+	ethereumTransaction.blockHash = addHexPrefix(encodeBlockHash(blockNumber));
 	ethereumTransaction.blockNumber = blockNumber;
 	ethereumTransaction.gas = 0;
 	ethereumTransaction.gasPrice = 0;
-	ethereumTransaction.hash = encodeTxHash(blockNumber, txIndex, operationId);
+	ethereumTransaction.hash = addHexPrefix(encodeTxHash(blockNumber, txIndex, operationId));
 	ethereumTransaction.input =
 	ethereumTransaction.nonce = 0;
 	ethereumTransaction.transactionIndex = txIndex;
@@ -122,7 +122,7 @@ export const mapEchoTxReceiptResultToEth = (echoTx, blockNumber, newAddress, blo
 	const [[operationId, targetOperation]] = operations;
 
 	const ethereumTransactionReceipt = {};
-	ethereumTransactionReceipt.blockHash = encodeBlockHash(blockNumber);
+	ethereumTransactionReceipt.blockHash = addHexPrefix(encodeBlockHash(blockNumber));
 	ethereumTransactionReceipt.blockNumber = blockNumber;
 	ethereumTransactionReceipt.contractAddress = newAddress ? addHexPrefix(newAddress) : newAddress;
 	ethereumTransactionReceipt.logs = logs;
@@ -146,7 +146,7 @@ export const mapEchoTxReceiptResultToEth = (echoTx, blockNumber, newAddress, blo
 
 /**
  * @description encode echo transaction identification data to 32b hash
- * hash structure: 0x[hashType 1b][operationId 1b][blockNumber 4b][transactionIndex 2b]000000000000000000000000000000000000000000000000
+ * hash structure: [hashType 1b][operationId 1b][blockNumber 4b][transactionIndex 2b]000000000000000000000000000000000000000000000000
  * @return {String}
  * @param {Number} blockNumber
  * @param {Number} txIndex
@@ -158,7 +158,7 @@ export const encodeTxHash = (blockNumber, txIndex, operationId) => {
 	hashBuffer.writeUInt8(operationId, 1);
 	hashBuffer.writeUInt32LE(blockNumber, 2);
 	hashBuffer.writeUInt16LE(txIndex, 6);
-	return addHexPrefix(hashBuffer.toString('hex'));
+	return hashBuffer.toString('hex');
 };
 
 /**
