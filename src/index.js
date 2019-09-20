@@ -6,7 +6,7 @@ import EthereumjsTx from './echo-ethereumjs-tx';
 import { getEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
 import * as transactionUtils from './utils/transaction-utils';
-import { overrideWeb3CoreMethodsByBridge } from './overrider';
+import { overrideWeb3CoreMethodsByBridge } from './web3-overrider.js';
 
 
 /** @typedef {

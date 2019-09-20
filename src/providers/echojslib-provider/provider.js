@@ -97,7 +97,6 @@ class EchoProvider {
 				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
 			})
 			.catch(error => {
-				console.log(error);
 				const formattedError = `Error during execution of ${method}: ${error}`;
 				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
 			});
