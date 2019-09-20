@@ -1,5 +1,3 @@
-class BridgeProvider {
-	// TODO
-}
+import BridgeProvider from './provider';
 
 export default BridgeProvider;

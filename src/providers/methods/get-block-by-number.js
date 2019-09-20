@@ -1,7 +1,7 @@
-import Method from './method';
-import { toDecimal } from '../../../utils/converters-utils';
-import { mapEchoBlockResultToEth } from '../../../utils/block-utils';
-import { isValidHex } from '../../../utils/validators';
+import Method from './abstract/method';
+import { toDecimal } from '../../utils/converters-utils';
+import { mapEchoBlockResultToEth } from '../../utils/block-utils';
+import { isValidHex } from '../../utils/validators';
 
 class GetBlockByNumber extends Method {
 

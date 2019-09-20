@@ -1,11 +1,11 @@
 import { constants } from 'echojs-lib';
-import Method from './method';
-import { addHexPrefix } from '../../../utils/converters-utils';
-import { isValidHex } from '../../../utils/validators';
+import Method from './abstract/method';
+import { addHexPrefix } from '../../utils/converters-utils';
+import { isValidHex } from '../../utils/validators';
 import BlockNumber from './block-number';
-import { createRange } from '../../../utils/range';
-import { encodeBlockHash } from '../../../utils/block-utils';
-import { encodeTxHash } from '../../../utils/transaction-utils';
+import { createRange } from '../../utils/range';
+import { encodeBlockHash } from '../../utils/block-utils';
+import { encodeTxHash } from '../../utils/transaction-utils';
 
 class GetLogs extends Method {
 
@@ -138,12 +138,12 @@ class GetLogs extends Method {
 
 			return {
 				blockNumber: addHexPrefix(blockNumber.toString(16)),
-				blockHash: encodeBlockHash(blockNumber),
+				blockHash: addHexPrefix(encodeBlockHash(blockNumber)),
 				logIndex: addHexPrefix(logIndex.toString(16)),
 				data: addHexPrefix(data),
 				topics: topics.map((log)=>addHexPrefix(log)),
 				address: addHexPrefix(address),
-				transactionHash: encodeTxHash(blockNumber, txIndex, operationId),
+				transactionHash: addHexPrefix(encodeTxHash(blockNumber, txIndex, operationId)),
 				txIndex: addHexPrefix(txIndex.toString(16))
 			};
 		});

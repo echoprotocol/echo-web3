@@ -1,8 +1,9 @@
 import echo, { serializers } from 'echojs-lib';
 
-import { isValidHex } from '../../../utils/validators';
-import { encodeTxHash } from '../../../utils/transaction-utils';
-import Method from './method';
+import { isValidHex } from '../../utils/validators';
+import { encodeTxHash } from '../../utils/transaction-utils';
+import Method from './abstract/method';
+import { addHexPrefix } from "../../utils/converters-utils";
 class SendRawTransaction extends Method {
 
 	/**
@@ -43,7 +44,7 @@ class SendRawTransaction extends Method {
 	_formatOutput(result) {
 		const [{ block_num: blockNumber, trx_num: txIndex, trx: { operations: [[ operationId ]]} }] = result;
 
-		return encodeTxHash(blockNumber, txIndex, operationId);
+		return addHexPrefix(encodeTxHash(blockNumber, txIndex, operationId));
 	}
 
 }

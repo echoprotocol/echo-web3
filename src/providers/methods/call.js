@@ -1,6 +1,6 @@
-import Method from './method';
-import { addHexPrefix } from '../../../utils/converters-utils';
-import { mapEthTxForCall } from '../../../utils/transaction-utils';
+import Method from './abstract/method';
+import { addHexPrefix } from '../../utils/converters-utils';
+import { mapEthTxForCall } from '../../utils/transaction-utils';
 
 class Call extends Method {
 
