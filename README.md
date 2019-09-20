@@ -1,31 +1,57 @@
 
 # echo-web3
 
-echo-web3 is a wrapper over Web3 that allow you to use web3's instance methods with the saving of methods signatures by calling to ECHO blockchain
+``echo-web3`` is a wrapper over Web3 that allows you to use web3's instance methods by calling to ECHO blockchain
+
+##Setup
+
+TB;DL
 
 ## Basic Usage
 
+Before usage of wrapped web3 methods ECHO-compatible provider(that is exported from ``echo-web3``) should be 
+initiated by calling of ``providerInstance.init()`` async method.
+
 ```javascript
 import Web3 from 'web3';
-import EchoWeb3, { EchoProvider } from './dist';
+import EchoWeb3, { EchoProvider } from 'echo-web3';
 
+// 1. wrap your web3 lib. 
+// Note: the minimum supported web3 version is 0.2.3 
 const WrappedWeb3 = EchoWeb3(Web3);
+// 2. define the echo network host
 const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 
 (async () => {
 
+	//1. 
 	const echoProvider = new EchoProvider(echoNetwork, { assetId: '1.3.0' });
 	const web3 = new WrappedWeb3(echoProvider);
 	await echoProvider.init(); // create connection to echo node
 
 	web3.eth.getBalance('0x00000000000000000000000000000000000001A9', (err, res)=>{
-		console.log(res);
+		console.log(res);   // BigNumber { s: 1, e: 19, c: [ 500000 ] } (50 ECHO in wei)
 		web3.disconnect();
 	});
-	// balance = BigNumber { s: 1, e: 19, c: [ 520000 ] } (50 ECHO in wei)
 
 })();
 ```
+
+### List of implemented methods
+
+Async request (use as method with callback)
+* [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
+* getBlock *([only by number](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber))*
+* [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
+* [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
+* [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber) 
+* [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
+* [GetTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
+* [GetCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
+* [GetLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) *(works only with the fixed web3 version [link](https://github.com/toffick/web3.js/tree/fix-inputGetLogsFormatter-return-value))*
+
+Sync request (use as property)
+* gasPrice 
 
 ## Ehtereumjs-wallet
 
