@@ -3,7 +3,7 @@
 
 ``echo-web3`` is a wrapper over Web3 that allows you to use web3's instance methods by calling to ECHO blockchain
 
-##Setup
+## Setup
 
 TB;DL
 
@@ -24,13 +24,18 @@ const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 
 (async () => {
 
-	//1. 
+	//3. create echoProvider instance. Default asset is 1.3.0
 	const echoProvider = new EchoProvider(echoNetwork, { assetId: '1.3.0' });
+	
+	//4. pass the provider in web3 instance
 	const web3 = new WrappedWeb3(echoProvider);
-	await echoProvider.init(); // create connection to echo node
+	
+	//5. init provider
+	await echoProvider.init();
 
 	web3.eth.getBalance('0x00000000000000000000000000000000000001A9', (err, res)=>{
 		console.log(res);   // BigNumber { s: 1, e: 19, c: [ 500000 ] } (50 ECHO in wei)
+		//6. disconnect from echo network
 		web3.disconnect();
 	});
 
