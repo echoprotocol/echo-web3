@@ -55,6 +55,8 @@ export const mapEthTxToEcho = (ethTx, asset) => {
 		options.from = shortMemoToAddress(from);
 		options.amount = { asset_id: asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.TRANSFER;
+	} else {
+		throw new Error('invalid eth tx object template');
 	}
 
 	return { options, operationId };
