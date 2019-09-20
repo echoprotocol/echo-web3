@@ -37,7 +37,7 @@ export const mapEthTxToEcho = (ethTx, asset) => {
 
 	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
 	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toNumber() || 0;
-
+	console.log(valueWithAssetAccuracy);
 	if (to && data) {
 		options.callee = shortMemoToAddress(to);
 		options.registrar = shortMemoToAddress(from);

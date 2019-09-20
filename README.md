@@ -215,9 +215,8 @@ import Transaction from 'ethereumjs-tx';
 
 const template = {
 	to: "0x010000000000000000000000000000000000014d",
-	data: "0x095ea7b30000000000000000000000000100000000000000000000000000000000000155000000000000000000000000000000000000000000000000002386f26fc10000",
 	from: "0x0000000000000000000000000000000000000189",
-	value: '0x0',
+	value: '0xDE0B6B3A7640000',
 } // contract call
 
 const transaction = new Transaction(template);
@@ -237,18 +236,19 @@ import Web3 from 'web3';
 import EchoWeb3, { EchoProvider } from 'echo-web3';
 const WrappedWeb3 = EchoWeb3(Web3);
 
+
 (async () => {
 	const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 	const echoProvider = new EchoProvider(echoNetwork, { assetId: '1.3.0' });
 	const web3 = new WrappedWeb3(echoProvider);
 	await echoProvider.init();
 
+	const privateKey = Buffer.from(process.env.PRIVATE_KEY, 'hex')
 	const template = {
 		to: "0x010000000000000000000000000000000000014d",
-		data: "0x095ea7b30000000000000000000000000100000000000000000000000000000000000155000000000000000000000000000000000000000000000000002386f26fc10000",
 		from: "0x0000000000000000000000000000000000000189",
-		value: '0x0',
-	} // contract call
+		value: '0xDE0B6B3A7640000', // 1 ECHO
+	}
 	
 	const transaction = new web3.EthereumjsTx(template);
 	await transaction.sign(privateKey); 
