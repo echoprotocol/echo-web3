@@ -1,6 +1,5 @@
 import { PrivateKey } from 'echojs-lib';
 import { addressToShortMemo, generateAccountNameByPublicKey } from '../utils/address-utils';
-import { ECHO_NAME_PREFIX } from '../constants';
 
 /**
  *
