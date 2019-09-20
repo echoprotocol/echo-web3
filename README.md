@@ -5,7 +5,15 @@
 
 ## Setup
 
-TB;DL
+Firstly, for work with `echo-web3` you need to install `web3` version 0.2.3 and greater:  
+```
+npm install web3@0.2.7
+```
+After you can install `echo-web3`:
+
+```
+npm install echo-web3
+```
 
 ## Basic Usage
 
@@ -111,7 +119,7 @@ const WrappedWeb3 = EchoWeb3(Web3);
 Before calling web3 method's you should give your page access to bridge extension by calling of
 `web3.currentProvider.enable()`. 
 
-#### List of implemented methods
+### List of implemented methods
 
 See description of method usage above.
 
@@ -139,7 +147,7 @@ For backward compatibility with the [Ethereumjs-wallet](https://github.com/ether
 was designed similar class as `ethWallet` and `hdKey` that received a ECHO instance.
 The access to this classes is `echoWeb3Instance.ethereumjsWallet`.
 
-#### Supported methods
+### Supported methods
 All implemented methods have the same signatures of input and output 
 as methods and they were inherited from original library.
  The list of implemented methods that works with ECHO network:
@@ -148,7 +156,7 @@ private key and returns private key in buffer.
 * walletInstance.getAddress() ⇒ Promise.\<String> - call ECHO network with a getting accountId 
 by associated with walletInstance private key. Returns a accountId in ETH address format
 
-#### Example of code migration from original library
+### Example of code migration from original library
 ###### Before
 ```javascript
 import * as ethWallet from 'ethereumjs-wallet';
@@ -207,7 +215,7 @@ as methods from original library. The list of implemented methods:
 * sign(privateKey: Buffer) ⇒ Promise.\<void> - signs created transaction
 * serialize() ⇒ Promise.\<Buffer> - returns serialized tx
 
-#### Example of code migration from original library
+### Example of code migration from original library
 ###### Before
 ```javascript
 import Transaction from 'ethereumjs-tx';
