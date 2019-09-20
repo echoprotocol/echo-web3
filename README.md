@@ -9,8 +9,10 @@ TB;DL
 
 ## Basic Usage
 
-Before usage of wrapped web3 methods ECHO-compatible provider(that is exported from ``echo-web3``) should be 
-initiated by calling of ``providerInstance.init()`` async method.
+Before usage of wrapped web3 methods ECHO-compatible provider(that is exported from `echo-web3`) should be 
+initiated by calling of `providerInstance.init()` async method.
+
+###### Example:
 
 ```javascript
 import Web3 from 'web3';
@@ -19,6 +21,7 @@ import EchoWeb3, { EchoProvider } from 'echo-web3';
 // 1. wrap your web3 lib. 
 // Note: the minimum supported web3 version is 0.2.3 
 const WrappedWeb3 = EchoWeb3(Web3);
+
 // 2. define the echo network host
 const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 
@@ -44,7 +47,10 @@ const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 
 ### List of implemented methods
 
-Async request (use as method with callback)
+All async methods receive payload parameters like in original Web3 JSON-RPC and the callback as last parameter.
+The signature of callback is ``(error, result)=>{}``.
+
+Async request (use as method with callback):
 * [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
 * getBlock *([only by number](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber))*
 * [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
@@ -55,8 +61,71 @@ Async request (use as method with callback)
 * [GetCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
 * [GetLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) *(works only with the fixed web3 version [link](https://github.com/toffick/web3.js/tree/fix-inputGetLogsFormatter-return-value))*
 
-Sync request (use as property)
-* gasPrice 
+Sync request (use as property):
+* [gasPrice](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gasprice) 
+
+## Bridge extension
+Like the MetaMask that inject web3 instance on page, there was designed `BridgeProvider` that helps you to
+work with echo-web3 instance on frontend pages with [Bridge extension](https://github.com/echoprotocol/bridge-extension).
+
+###### Example:
+
+```javascript
+import Web3 from 'web3';
+import EchoWeb3, { BridgeProvider } from 'echo-web3';
+
+// 1. wrap your web3 lib.
+// Note: the minimum supported web3 version is 0.2.3
+const WrappedWeb3 = EchoWeb3(Web3);
+
+(async () => {
+
+	//2. create bridgeProvider instance. Default asset is 1.3.0
+	const bridgeProvider = new BridgeProvider({ assetId: '1.3.0' });
+
+	//3. pass the provider in web3 instance
+	const web3 = new WrappedWeb3(bridgeProvider);
+
+	//3. init provider
+	await bridgeProvider.init();
+	
+	//4. get access to extension from your page
+	await web3.currentProvider.enable();
+
+	console.log(web3.eth.accounts); // ["0x000000000000000000000000000000000000013a"]
+	
+	web3.eth.sendTransaction({
+		to: '0x00000000000000000000000000000000000001e9',  // 1.2.489
+		value: '500000000000000000'                        // 0.5 ECHO
+	}, (err, res)=>{
+		console.log(res);                                  // <txHash>
+		web3.disconnect();
+	});
+
+})();
+```
+Before calling web3 method's you should give your page access to bridge extension by calling of
+`web3.currentProvider.enable()`. 
+
+### List of implemented methods
+
+Async request (use as method with callback):
+* [sendTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction)
+* [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
+* getBlock *([only by number](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber))*
+* [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
+* [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
+* [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber) 
+* [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
+* [getTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
+* [getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
+* [getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) *(works only with the fixed web3 version [link](https://github.com/toffick/web3.js/tree/fix-inputGetLogsFormatter-return-value))*
+* [getNetwork](https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version)
+
+Sync request (use as property):
+* [gasPrice](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gasprice) 
+* [accounts](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_accounts) 
+
 
 ## Ehtereumjs-wallet
 
