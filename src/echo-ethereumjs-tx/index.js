@@ -26,15 +26,17 @@ class EthereumjsTx {
 	 * @return {Promise<void>}
 	 */
 	async sign(privateKeyBuffer) {
-		const echoPrivateKey = PrivateKey.fromBuffer(privateKeyBuffer);
-		const publicKeyString = echoPrivateKey.toPublicKey().toPublicKeyString();
-		const accountName = generateAccountNameByPublicKey(publicKeyString);
-		const account = await this.echo.api.getAccountByName(accountName);
-		if (!account) {
-			throw new Error('account doesn\'t exist');
+		if(!this._options.from){
+			// set registar  field from privateKey
+			const echoPrivateKey = PrivateKey.fromBuffer(privateKeyBuffer);
+			const publicKeyString = echoPrivateKey.toPublicKey().toPublicKeyString();
+			const accountName = generateAccountNameByPublicKey(publicKeyString);
+			const account = await this.echo.api.getAccountByName(accountName);
+			if (!account) {
+				throw new Error('account doesn\'t exist');
+			}
+			this._options.registrar = account.id;
 		}
-
-		this._options.registrar = account.id;
 
 		this._transaction = this.echo.createTransaction()
 			.addOperation(this._operationId, this._options);

@@ -36,7 +36,7 @@ const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 	//5. init provider
 	await echoProvider.init();
 
-	web3.eth.getBalance('0x00000000000000000000000000000000000001A9', (err, res)=>{
+	web3.eth.getBalance('0x00000000000000000000000000000000000001A9', (err, res) => {
 		console.log(res);   // BigNumber { s: 1, e: 19, c: [ 500000 ] } (50 ECHO in wei)
 		//6. disconnect from echo network
 		web3.disconnect();
@@ -48,11 +48,11 @@ const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 ### List of implemented methods and properties
 
 All of this implemented methods can be executed by calling:
- > `web3Instance.eth.<methodName>(param1, param2, callback)`.
+ > `web3.eth.<methodName>(param1, param2, callback)`.
 
 All async methods receive payload parameters like in original Web3 JSON-RPC and the callback as last parameter.
 The signature of callback is: 
- > `(error, result)=>{}`.
+ > `(error, result) => {}`.
 
 Async request (use as method with callback):
 * [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
@@ -101,7 +101,7 @@ const WrappedWeb3 = EchoWeb3(Web3);
 	web3.eth.sendTransaction({
 		to: '0x00000000000000000000000000000000000001e9',  // 1.2.489
 		value: '500000000000000000'                        // 0.5 ECHO
-	}, (err, res)=>{
+	}, (err, res) => {
 		console.log(res);                                  // <txHash>
 		web3.disconnect();
 	});
@@ -111,7 +111,7 @@ const WrappedWeb3 = EchoWeb3(Web3);
 Before calling web3 method's you should give your page access to bridge extension by calling of
 `web3.currentProvider.enable()`. 
 
-### List of implemented methods
+#### List of implemented methods
 
 See description of method usage above.
 
@@ -135,37 +135,133 @@ Sync request (use as property):
 
 ## Ehtereumjs-wallet
 
-For backward compatibility with the [Ethereumjs-wallet](https://github.com/ethereumjs/ethereumjs-wallet) 
+For backward compatibility with the [Ethereumjs-wallet](https://github.com/ethereumjs/ethereumjs-wallet)
+was designed similar class as `ethWallet` and `hdKey` that received a ECHO instance.
+The access to this classes is `echoWeb3Instance.ethereumjsWallet`.
 
-TB;DL
+#### Supported methods
+All implemented methods have the same signatures of input and output 
+as methods and they were inherited from original library.
+ The list of implemented methods that works with ECHO network:
+* hdKey.getPrivateKey() ⇒ Promise.\<Buffer> - register account in ECHO network by associated with walletInstance 
+private key and returns private key in buffer.
+* walletInstance.getAddress() ⇒ Promise.\<String> - call ECHO network with a getting accountId 
+by associated with walletInstance private key. Returns a accountId in ETH address format
+
+#### Example of code migration from original library
+###### Before
+```javascript
+import * as ethWallet from 'ethereumjs-wallet';
+import * as hdKey from 'ethereumjs-wallet/hdkey';
+
+...
+const DERIVATION_PATH = "m/0'/0'/0'/0";
+
+const hdWallet = hdKey.fromMasterSeed('asdasdahd99wry9834ht93j498');
+const wallet = hdWallet.derivePath(DERIVATION_PATH).getWallet();
+
+const privateKey = wallet.getPrivateKey();
+
+const restoredWallet = ethWallet.fromPrivateKey(privateKey);
+console.log(`0x${restoredWallet.getAddress().toString('hex')}`) // 0x856A7c355CE3120E4Ae9f98C09e3BD1f9dbaF89E
+
+```
+
+###### After
+```javascript
+import Web3 from 'web3';
+import EchoWeb3, { EchoProvider } from 'echo-web3';
+const WrappedWeb3 = EchoWeb3(Web3);
+
+(async () => {
+	
+	const echoNetwork = 'wss://testnet.echo-dev.io/ws';
+	const echoProvider = new EchoProvider(echoNetwork, { assetId: '1.3.0' });
+	const web3 = new WrappedWeb3(echoProvider);
+	await echoProvider.init();
+	
+	const { hdKey, ethWallet } = web3.ethereumjsWallet;
+	
+	const DERIVATION_PATH = "m/0'/0'/0'/0";
+	
+	const hdWallet = hdKey.fromMasterSeed('asdasdahd99wry9834ht93j498');
+	const wallet = hdWallet.derivePath(DERIVATION_PATH).getWallet();
+	
+	const privateKey = await wallet.getPrivateKey();
+	
+	const restoredWallet = ethWallet.fromPrivateKey(privateKey);
+	console.log(`0x${(await restoredWallet.getAddress()).toString('hex')}`) // 0x0000000000000000000000000000000000000205
+})();
+```
+
 
 ## Ehtereumjs-tx
 
 For backward compatibility with the [Ethereumjs-tx](https://github.com/ethereumjs/ethereumjs-tx) 
-was designed class `EthereumjsTx` that received a ECHO instance when is created by `EchoWeb3Instance`: 
+was designed class `EthereumjsTx` that received a ECHO instance when is created by `echoWeb3Instance.EthereumjsTx`.
+
+#### Supported methods
+All implemented methods have the same signatures of input and output 
+as methods from original library. The list of implemented methods:
+
+* sign(privateKey: Buffer) ⇒ Promise.\<void> - signs created transaction
+* serialize() ⇒ Promise.\<Buffer> - returns serialized tx
+
+#### Example of code migration from original library
+###### Before
+```javascript
+import Transaction from 'ethereumjs-tx';
+...
+
+const template = {
+	to: "0x010000000000000000000000000000000000014d",
+	data: "0x095ea7b30000000000000000000000000100000000000000000000000000000000000155000000000000000000000000000000000000000000000000002386f26fc10000",
+	from: "0x0000000000000000000000000000000000000189",
+	value: '0x0',
+} // contract call
+
+const transaction = new Transaction(template);
+transaction.sign(privateKey);
+const serializedTxString = `0x${transaction.serialize().toString('hex')}`
+
+web3.sendRawTransaction(serializedTxString, (err, result) => {
+	console.log(result); // <txHash>
+});
+
+```
+
+###### After
 
 ```javascript
+import Web3 from 'web3';
+import EchoWeb3, { EchoProvider } from 'echo-web3';
+const WrappedWeb3 = EchoWeb3(Web3);
+
 (async () => {
+	const echoNetwork = 'wss://testnet.echo-dev.io/ws';
+	const echoProvider = new EchoProvider(echoNetwork, { assetId: '1.3.0' });
+	const web3 = new WrappedWeb3(echoProvider);
+	await echoProvider.init();
+
 	const template = {
 		to: "0x010000000000000000000000000000000000014d",
 		data: "0x095ea7b30000000000000000000000000100000000000000000000000000000000000155000000000000000000000000000000000000000000000000002386f26fc10000",
 		from: "0x0000000000000000000000000000000000000189",
 		value: '0x0',
 	} // contract call
-    		
-	const transaction = wrappedWeb3Instance.createEthereumTransaction(template); //pass the etehreum transaction object
-	await transaction.sign(privateKey);  //signing is required before getting of raw tx
-	const rawTx = transaction.serialize()  // getting of raw tx buffer
-	console.log(rawTx.toString('hex'));
 	
-	// a3b9c4eac9e93a6d775d0119f5000000000000000089030000000000000000008a01307830393565613762333030303030
-	// 3030303030303030303030303030303030303030313030303030303030303030303030303030303030303030303030303
-	// 0303030303030303135353030303030303030303030303030303030303030303030303030303030303030303030303030
-	// 3030303030303030303030303233383666323666633130303030cd02000001eb4f9055faeb3d65362eb2fe1611203cb35
-	// aa09b9f4bd7cae52c631109e1087d0196850e689646552c5fda3007e5d27c513938dee872e6d3c2bbc678b9b6a20e
+	const transaction = new web3.EthereumjsTx(template);
+	await transaction.sign(privateKey); 
+	const serializedTxString = `0x${transaction.serialize().toString('hex')}`
 	
-})()
+	web3.eth.sendRawTransaction(serializedTxString, (err, result) => {
+		console.log(result); // <txHash>
+	});
+
+})();
+
 ```
+
 
 ## License
 
