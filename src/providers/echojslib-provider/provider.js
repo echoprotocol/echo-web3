@@ -11,6 +11,7 @@ class EchoProvider {
 	 * @param {ProviderOptions} options
 	 */
 	constructor(host, options = {}) {
+		// for private using of echo-web3
 		this.isEchoProvider = true;
 		this._echo = echo;
 		this.host = host;
@@ -25,12 +26,24 @@ class EchoProvider {
 		};
 	}
 
+	/**
+	 *
+	 * @return {Echo}
+	 */
+	get echo() {
+		return this._echo;
+	}
+
+	/**
+	 * init provider connection
+	 * @return {Promise<void>}
+	 */
 	async init() {
 		await this.echo.connect(this.host, { apis: constants.WS_CONSTANTS.CHAIN_APIS });
 
 		// asset info initialization on provider init
 		const assetObject = await this.echo.api.getObject(this.asset.id);
-		if (!assetObject) {
+		if (!assetObject || !assetObject.precision) {
 			throw new Error(`unknown asset id: ${this.asset.id}`);
 		}
 
@@ -38,14 +51,6 @@ class EchoProvider {
 
 		/** @type {Dispatcher}*/
 		this._dispatcher = new Dispatcher(echo, this.asset);
-	}
-
-	/**
-	 *
-	 * @return {Echo}
-	 */
-	get echo() {
-		return this._echo;
 	}
 
 	/**

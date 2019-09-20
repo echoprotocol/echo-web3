@@ -11,7 +11,9 @@ class BridgeProvider {
 	 * @param {ProviderOptions} options
 	 */
 	constructor(options = {}) {
+		// for compatibility with logic of frontend apps where MetaMask extension is used
 		this.isMetaMask = true;
+		// for private using of echo-web3
 		this.isBridgeCore = true;
 		const { echojslib } = window;
 		if (!(echojslib && echojslib.isEchoBridge)) {
@@ -31,6 +33,26 @@ class BridgeProvider {
 		};
 	}
 
+	/**
+	 *
+	 * @return {Echo}
+	 */
+	get echo() {
+		return this._echo;
+	}
+
+	/**
+	 *
+	 * @return {*}
+	 */
+	get extension() {
+		return this._extension;
+	}
+
+	/**
+	 * init provider connection
+	 * @return {Promise<void>}
+	 */
 	async init() {
 		// get access to echo instance and extension methods by clicking to Approve button in Bridge UI
 		try {
@@ -50,7 +72,7 @@ class BridgeProvider {
 
 		const assetObject = await this.echo.api.getObject(this.asset.id);
 
-		if (!assetObject) {
+		if (!assetObject || !assetObject.precision) {
 			throw new Error(`unknown asset id: ${this.asset.id}`);
 		}
 
@@ -58,18 +80,6 @@ class BridgeProvider {
 
 		/** @type {BridgeDispatcher}*/
 		this._dispatcher = new BridgeDispatcher(this._extension, this._echo, this.asset);
-	}
-
-	/**
-	 *
-	 * @return {Echo}
-	 */
-	get echo() {
-		return this._echo;
-	}
-
-	get extension() {
-		return this._extension;
 	}
 
 	/**
@@ -119,13 +129,13 @@ class BridgeProvider {
 		}
 
 		echoSpyMethod.execute()
-		.then(result => {
-			return callback(null, this._wrapAsJsonRpcResponse(payload, result));
-		})
-		.catch(error => {
-			const formattedError = `Error during execution of ${method}: ${error}`;
-			return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
-		});
+			.then(result => {
+				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
+			})
+			.catch(error => {
+				const formattedError = `Error during execution of ${method}: ${error}`;
+				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
+			});
 	}
 
 	async enable() {
