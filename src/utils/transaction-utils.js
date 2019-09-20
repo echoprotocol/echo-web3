@@ -37,7 +37,7 @@ export const mapEthTxToEcho = (ethTx, asset) => {
 
 	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
 	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toNumber() || 0;
-	console.log(valueWithAssetAccuracy);
+
 	if (to && data) {
 		options.callee = shortMemoToAddress(to);
 		options.registrar = shortMemoToAddress(from);
@@ -88,19 +88,19 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 	ethereumTransaction.v = addHexPrefix();
 
 	if(operationId === constants.OPERATIONS_IDS.CONTRACT_CALL){
-		ethereumTransaction.to = addressToShortMemo(targetOperation.callee);
-		ethereumTransaction.from = addressToShortMemo(targetOperation.registrar);
+		ethereumTransaction.to = addHexPrefix(addressToShortMemo(targetOperation.callee));
+		ethereumTransaction.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
 		ethereumTransaction.data = targetOperation.code;
 		const valueWithAssetAccuracyBN = assetValueToWei(targetOperation.value.amount, asset.precision);
 		ethereumTransaction.value = valueWithAssetAccuracyBN.toNumber();
 	} else if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE) {
-		ethereumTransaction.from = addressToShortMemo(targetOperation.registrar);
+		ethereumTransaction.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
 		ethereumTransaction.data = targetOperation.code;
 		const valueWithAssetAccuracyBN = assetValueToWei(targetOperation.value.amount, asset.precision);
 		ethereumTransaction.value = valueWithAssetAccuracyBN.toNumber();
 	} else if (operationId === constants.OPERATIONS_IDS.TRANSFER) {
-		ethereumTransaction.from = addressToShortMemo(targetOperation.from);
-		ethereumTransaction.to = addressToShortMemo(targetOperation.to);
+		ethereumTransaction.from = addHexPrefix(addressToShortMemo(targetOperation.from));
+		ethereumTransaction.to = addHexPrefix(addressToShortMemo(targetOperation.to));
 		const valueWithAssetAccuracyBN = assetValueToWei(targetOperation.amount.amount, asset.precision);
 		ethereumTransaction.value = valueWithAssetAccuracyBN.toNumber();
 	}
