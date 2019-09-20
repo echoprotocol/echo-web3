@@ -18,7 +18,7 @@ initiated by calling of `providerInstance.init()` async method.
 import Web3 from 'web3';
 import EchoWeb3, { EchoProvider } from 'echo-web3';
 
-// 1. wrap your web3 lib. 
+// 1. wrap your web3 lib
 // Note: the minimum supported web3 version is 0.2.3 
 const WrappedWeb3 = EchoWeb3(Web3);
 
@@ -45,10 +45,14 @@ const echoNetwork = 'wss://testnet.echo-dev.io/ws';
 })();
 ```
 
-### List of implemented methods
+### List of implemented methods and properties
+
+All of this implemented methods can be executed by calling:
+ > `web3Instance.eth.<methodName>(param1, param2, callback)`.
 
 All async methods receive payload parameters like in original Web3 JSON-RPC and the callback as last parameter.
-The signature of callback is ``(error, result)=>{}``.
+The signature of callback is: 
+ > `(error, result)=>{}`.
 
 Async request (use as method with callback):
 * [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
@@ -74,7 +78,7 @@ work with echo-web3 instance on frontend pages with [Bridge extension](https://g
 import Web3 from 'web3';
 import EchoWeb3, { BridgeProvider } from 'echo-web3';
 
-// 1. wrap your web3 lib.
+// 1. wrap your web3 lib
 // Note: the minimum supported web3 version is 0.2.3
 const WrappedWeb3 = EchoWeb3(Web3);
 
@@ -108,6 +112,8 @@ Before calling web3 method's you should give your page access to bridge extensio
 `web3.currentProvider.enable()`. 
 
 ### List of implemented methods
+
+See description of method usage above.
 
 Async request (use as method with callback):
 * [sendTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction)
