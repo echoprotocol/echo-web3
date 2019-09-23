@@ -1,13 +1,17 @@
 import BigNumber from 'bignumber.js';
-import { constants } from 'echojs-lib';
+import { constants, hash } from 'echojs-lib';
+
 import {addHexPrefix} from '../utils/converters-utils';
 import { isValidAddress } from './validators';
+import { ECHO_NAME_PREFIX } from '../constants';
 
-//TODO to constatnts
-const CONTRACT_TYPE_ID = constants.OBJECT_TYPES.CONTRACT;
-const ACCOUNT_TYPE_ID = constants.OBJECT_TYPES.ACCOUNT;
-
-export const addressRegExp = new RegExp(`^1\\.(${CONTRACT_TYPE_ID}|${ACCOUNT_TYPE_ID})\\.(([1-9]\\d*)|0)$`);
+/**
+ *
+ * @param {String} publicKey
+ * @return {string}
+ */
+export const generateAccountNameByPublicKey = (publicKey) =>`${ECHO_NAME_PREFIX}${hash.sha256(publicKey, 'hex').slice(0, 20)}`;
+export const addressRegExp = new RegExp(`^1\\.(${constants.OBJECT_TYPES.CONTRACT}|${constants.OBJECT_TYPES.ACCOUNT})\\.(([1-9]\\d*)|0)$`);
 
 /**
  * @param {string} value
@@ -19,9 +23,9 @@ export function shortMemoToAddress(value) {
 	if (typeof value !== 'string') throw new Error('decoding value is not a string');
 	if (value.startsWith(''.padStart(24, '0')) && value[24] !== '0') return addHexPrefix(value.substr(24));
 	if (!value.startsWith(''.padStart(1, '0'))) throw new Error('first 100 bits are not zeros');
-	const _13thByte = value.substr(0, 2);
-	if (!/^0[01]$/.test(_13thByte)) throw new Error('13th byte is not in ["00", "01"]');
-	const isContract = _13thByte === '01';
+	const _1stByte = value.substr(0, 2);
+	if (!/^0[01]$/.test(_1stByte)) throw new Error('13th byte is not in ["00", "01"]');
+	const isContract = _1stByte === '01';
 	const accountIndex = new BigNumber(value.substr(26), 16);
 	if (accountIndex.gte('2**32')) return `0x${accountIndex.toString(16).padStart(40, '0')}`;
 	return ['1', isContract ? constants.OBJECT_TYPES.CONTRACT : '2', accountIndex.toString(10)].join('.');

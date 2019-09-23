@@ -3,8 +3,11 @@ import semver from 'semver';
 import EchoProvider from './providers/echojslib-provider';
 import BridgeProvider from './providers/bridge-provider';
 import EthereumjsTx from './echo-ethereumjs-tx';
-import { getWrappedEthWalletLib } from './echo-ethereumjs-wallet';
+import { getEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
+import * as transactionUtils from './utils/transaction-utils';
+import { overrideWeb3CoreMethodsByBridge } from './web3-overrider.js';
+
 
 /** @typedef {
 *	{
@@ -42,37 +45,39 @@ const EchoWeb3 = (Web3Class) => {
 			super();
 
 			// check the minimal Web3 API version for  methods stable overriding
-			if (semver.lt(this.version.api, constants.MIN_WEB3_API_VERSION))
-			{throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);}
+			if (semver.lt(this.version.api, constants.MIN_WEB3_API_VERSION)) {
+				throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);
+			}
 
-			if (provider.isEchoProvider) {
-				// set provider if web3 version isn't least than supported
+			if (provider.isEchoProvider || provider.isBridgeCore) {
+				if (provider.isBridgeCore) {
+					overrideWeb3CoreMethodsByBridge(this, provider.extension);
+				}
+
+				// set provider if web3 version isn't least than supported and provider can works with echo network
 				this.setProvider(provider);
 			} else {
 				throw new Error('You can pass only Echo compatibility provider');
 			}
 
 			// wrap Ethereumjs-wallet classes with connected ECHO instance
-			const { ethWallet, hdkey } = getWrappedEthWalletLib(provider.echo);
-			this._ethWallet = ethWallet;
-			this._hdkey = hdkey;
+			this._ethereumjsWallet = getEthWalletLib(provider.echo);
+
 		}
 
-		get ethWallet() {
-			return this._ethWallet;
+		get ethereumjsWallet() {
+			return this._ethereumjsWallet;
 		}
 
-		get hdKey() {
-			return this._hdkey;
-		}
+		set ethereumjsWallet(value) {}
 
-		/**
-		 *
-		 * @param {EthereumTransaction} ethereumTx
-		 * @return {EthereumjsTx}
-		 */
-		createEthereumTransaction(ethereumTx) {
-			return new EthereumjsTx(ethereumTx, this.currentProvider.echo, this.currentProvider.asset);
+		get EthereumjsTx() {
+			const { echo, asset } = this.currentProvider;
+			return class WrappedEthereumJs extends EthereumjsTx {
+				constructor(template) {
+					super(template, echo, asset);
+				}
+			};
 		}
 
 		/**
@@ -88,7 +93,9 @@ const EchoWeb3 = (Web3Class) => {
 
 export {
 	EchoProvider,
-	EthereumjsTx
+	BridgeProvider,
+	EthereumjsTx,
+	transactionUtils
 };
 
 export default EchoWeb3;

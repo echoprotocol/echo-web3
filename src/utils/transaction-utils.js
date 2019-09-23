@@ -25,7 +25,7 @@ export const mapEthTxForCall = (ethTx) => {
  * @param {Asset} asset
  * @return {{options, operationId}}
  */
-export const mapEthereumTxResultToEcho = (ethTx, asset) => {
+export const mapEthTxToEcho = (ethTx, asset) => {
 	const { from, to, data, value } = ethTx;
 	let operationId = null;
 
@@ -36,9 +36,9 @@ export const mapEthereumTxResultToEcho = (ethTx, asset) => {
 	};
 
 	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
-	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toNumber();
+	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toNumber() || 0;
 
-	if (from && to && data) {
+	if (to && data) {
 		options.callee = shortMemoToAddress(to);
 		options.registrar = shortMemoToAddress(from);
 		options.code = data;
@@ -55,6 +55,8 @@ export const mapEthereumTxResultToEcho = (ethTx, asset) => {
 		options.from = shortMemoToAddress(from);
 		options.amount = { asset_id: asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.TRANSFER;
+	} else {
+		throw new Error('invalid eth tx object template');
 	}
 
 	return { options, operationId };
@@ -73,11 +75,11 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 	const [[operationId, targetOperation]] = operations;
 
 	const ethereumTransaction = {};
-	ethereumTransaction.blockHash = encodeBlockHash(blockNumber);
+	ethereumTransaction.blockHash = addHexPrefix(encodeBlockHash(blockNumber));
 	ethereumTransaction.blockNumber = blockNumber;
 	ethereumTransaction.gas = 0;
 	ethereumTransaction.gasPrice = 0;
-	ethereumTransaction.hash = encodeTxHash(blockNumber, txIndex, operationId);
+	ethereumTransaction.hash = addHexPrefix(encodeTxHash(blockNumber, txIndex, operationId));
 	ethereumTransaction.input =
 	ethereumTransaction.nonce = 0;
 	ethereumTransaction.transactionIndex = txIndex;
@@ -86,19 +88,19 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 	ethereumTransaction.v = addHexPrefix();
 
 	if(operationId === constants.OPERATIONS_IDS.CONTRACT_CALL){
-		ethereumTransaction.to = addressToShortMemo(targetOperation.callee);
-		ethereumTransaction.from = addressToShortMemo(targetOperation.registrar);
+		ethereumTransaction.to = addHexPrefix(addressToShortMemo(targetOperation.callee));
+		ethereumTransaction.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
 		ethereumTransaction.data = targetOperation.code;
 		const valueWithAssetAccuracyBN = assetValueToWei(targetOperation.value.amount, asset.precision);
 		ethereumTransaction.value = valueWithAssetAccuracyBN.toNumber();
 	} else if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE) {
-		ethereumTransaction.from = addressToShortMemo(targetOperation.registrar);
+		ethereumTransaction.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
 		ethereumTransaction.data = targetOperation.code;
 		const valueWithAssetAccuracyBN = assetValueToWei(targetOperation.value.amount, asset.precision);
 		ethereumTransaction.value = valueWithAssetAccuracyBN.toNumber();
 	} else if (operationId === constants.OPERATIONS_IDS.TRANSFER) {
-		ethereumTransaction.from = addressToShortMemo(targetOperation.from);
-		ethereumTransaction.to = addressToShortMemo(targetOperation.to);
+		ethereumTransaction.from = addHexPrefix(addressToShortMemo(targetOperation.from));
+		ethereumTransaction.to = addHexPrefix(addressToShortMemo(targetOperation.to));
 		const valueWithAssetAccuracyBN = assetValueToWei(targetOperation.amount.amount, asset.precision);
 		ethereumTransaction.value = valueWithAssetAccuracyBN.toNumber();
 	}
@@ -107,8 +109,46 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 };
 
 /**
+ *
+ * @param {Object} echoTx
+ * @param blockNumber
+ * @param contractAddress
+ * @param bloom
+ * @param logs
+ * @param transactionHash
+ * @param transactionIndex
+ * @return {*}
+ */
+export const mapEchoTxReceiptResultToEth = (echoTx, blockNumber, newAddress, bloom, logs, transactionHash, transactionIndex) => {
+	const { operations } = echoTx;
+	const [[operationId, targetOperation]] = operations;
+
+	const ethereumTransactionReceipt = {};
+	ethereumTransactionReceipt.blockHash = addHexPrefix(encodeBlockHash(blockNumber));
+	ethereumTransactionReceipt.blockNumber = blockNumber;
+	ethereumTransactionReceipt.contractAddress = newAddress ? addHexPrefix(newAddress) : newAddress;
+	ethereumTransactionReceipt.logs = logs;
+	ethereumTransactionReceipt.logsBloom = addHexPrefix(bloom ? bloom : new Array(512 + 1).join(0));
+	ethereumTransactionReceipt.status = addHexPrefix(1);
+	ethereumTransactionReceipt.transactionHash = transactionHash;
+	ethereumTransactionReceipt.transactionIndex = transactionIndex;
+
+	if(operationId === constants.OPERATIONS_IDS.CONTRACT_CALL){
+		ethereumTransactionReceipt.to = addHexPrefix(addressToShortMemo(targetOperation.callee));
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
+	} else if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE) {
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
+	} else if (operationId === constants.OPERATIONS_IDS.TRANSFER) {
+		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.from));
+		ethereumTransactionReceipt.to = addHexPrefix(addressToShortMemo(targetOperation.to));
+	}
+
+	return ethereumTransactionReceipt;
+};
+
+/**
  * @description encode echo transaction identification data to 32b hash
- * hash structure: 0x[hashType 1b][operationId 1b][blockNumber 4b][transactionIndex 2b]000000000000000000000000000000000000000000000000
+ * hash structure: [hashType 1b][operationId 1b][blockNumber 4b][transactionIndex 2b]000000000000000000000000000000000000000000000000
  * @return {String}
  * @param {Number} blockNumber
  * @param {Number} txIndex
@@ -120,7 +160,7 @@ export const encodeTxHash = (blockNumber, txIndex, operationId) => {
 	hashBuffer.writeUInt8(operationId, 1);
 	hashBuffer.writeUInt32LE(blockNumber, 2);
 	hashBuffer.writeUInt16LE(txIndex, 6);
-	return addHexPrefix(hashBuffer.toString('hex'));
+	return hashBuffer.toString('hex');
 };
 
 /**

@@ -10,14 +10,13 @@ import wrapHdkey from './hdkey';
  * @param echo
  * @return {{ethWallet: EthWallet, hdkey: Hdkey}}
  */
-export const getWrappedEthWalletLib = (echo) => {
+export const getEthWalletLib = (echo) => {
 	const wrappedEthWalletClass = wrapEthWallet(EthWallet, echo);
-	const wrappedHdkeyClass = wrapHdkey(Hdkey, wrappedEthWalletClass, echo);
-	// TODO impl the same wrapping for provider-engine and thirdparty modules
+	const wrappedHdkeyClass = wrapHdkey(Hdkey, wrappedEthWalletClass);
 
 	return {
 		ethWallet: wrappedEthWalletClass,
-		hdkey: wrappedHdkeyClass
+		hdKey: wrappedHdkeyClass
 	};
 };
 

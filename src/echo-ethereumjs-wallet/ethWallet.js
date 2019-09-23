@@ -1,5 +1,5 @@
-import { PrivateKey, hash } from 'echojs-lib';
-import { addressToShortMemo } from '../utils/address-utils';
+import { PrivateKey } from 'echojs-lib';
+import { addressToShortMemo, generateAccountNameByPublicKey } from '../utils/address-utils';
 
 /**
  *
@@ -9,44 +9,48 @@ import { addressToShortMemo } from '../utils/address-utils';
  */
 const wrapEthWallet = (OriginalEthWallet, echo) => {
 
-	//TODO refactor to class inherits
-	/**
-	 * register account by created name if it doesn't exist and return private key buffer
-	 * @return {Promise<Buffer>}
-	 */
-	OriginalEthWallet.prototype.getPrivateKey = async function() {
-		const echoPrivateKey = PrivateKey.fromBuffer(this._privKey);
-		const publicKeyString = echoPrivateKey.toPublicKey().toPublicKeyString();
-		const accountName = `ethaccountname${hash.sha256(publicKeyString, 'hex').slice(0, 20)}`;
-		const account = await echo.api.getAccountByName(accountName);
-		if(!account){
-			await echo.api.registerAccount(
-				accountName,
-				publicKeyString,
-				publicKeyString,
-			);
+	return class WrapEthWallet extends OriginalEthWallet {
+
+		static fromPrivateKey(privateKey){
+			return new WrapEthWallet(privateKey);
 		}
-		return this._privKey;
+
+		/**
+		 * register account by created name if it doesn't exist and return private key buffer
+		 * @return {Promise<Buffer>}
+		 */
+		async getPrivateKey() {
+			const echoPrivateKey = PrivateKey.fromBuffer(this._privKey);
+			const publicKeyString = echoPrivateKey.toPublicKey().toPublicKeyString();
+			const accountName = generateAccountNameByPublicKey(publicKeyString);
+			const account = await echo.api.getAccountByName(accountName);
+			if(!account){
+				await echo.api.registerAccount(
+					accountName,
+					publicKeyString,
+					publicKeyString,
+				);
+			}
+			return this._privKey;
+		}
+
+		/**
+		 *
+		 * @return {Promise<Buffer>}
+		 */
+		async getAddress() {
+			const echoPrivateKey = PrivateKey.fromBuffer(this._privKey);
+			const publicKeyString = echoPrivateKey.toPublicKey().toPublicKeyString();
+			const accountName = generateAccountNameByPublicKey(publicKeyString);
+			const account = await echo.api.getAccountByName(accountName);
+			if(!account){
+				throw new Error('account doesn\'t exist');
+			}
+			const {id} = account;
+			return Buffer.from(addressToShortMemo(id), 'hex');
+		}
 	};
 
-
-	/**
-	 *
-	 * @return {Promise<Wallet>}
-	 */
-	OriginalEthWallet.prototype.getAddress = async function() {
-		const echoPrivateKey = PrivateKey.fromBuffer(this._privKey);
-		const publicKeyString = echoPrivateKey.toPublicKey().toPublicKeyString();
-		const accountName = `ethaccountname${hash.sha256(publicKeyString, 'hex').slice(0, 20)}`;
-		const account = await echo.api.getAccountByName(accountName);
-		if(!account){
-			throw new Error('account doesn\'t exist');
-		}
-		const {id} = account;
-		return Buffer.from(addressToShortMemo(id), 'hex');
-	};
-
-	return OriginalEthWallet;
 };
 
 export default wrapEthWallet;

@@ -30,6 +30,6 @@ export const isValidIdentificationHash = (txHash) =>{
  * @param {String} value
  * @return {boolean}
  */
-export const isValidValue = (value) =>{
+export const isValidHex = (value) =>{
 	return /^0x[a-zA-Z\d]+$/.test(value);
 };

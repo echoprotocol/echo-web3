@@ -1,20 +1,27 @@
-import echo, { constants } from 'echojs-lib';
-
-import Dispatcher from './dispatcher';
+import BridgeDispatcher from './dispatcher';
 import { ECHO_CONSTANTS } from '../../constants';
+import { addressToShortMemo } from '../../utils/address-utils';
+import { addHexPrefix } from '../../utils/converters-utils';
 
-class EchoProvider {
+class BridgeProvider {
 
 	/**
 	 *
 	 * @param {String} host
 	 * @param {ProviderOptions} options
 	 */
-	constructor(host, options = {}) {
+	constructor(options = {}) {
+		// for compatibility with logic of frontend apps where MetaMask extension is used
+		this.isMetaMask = true;
 		// for private using of echo-web3
-		this.isEchoProvider = true;
-		this._echo = echo;
-		this.host = host;
+		this.isBridgeCore = true;
+		const { echojslib } = window;
+		if (!(echojslib && echojslib.isEchoBridge)) {
+			throw new Error('Bridge extension wasn\'t provided');
+		}
+
+		this._echo = echojslib.echo;
+		this._extension = echojslib.extension;
 
 		this._dispatcher = null;
 
@@ -35,22 +42,44 @@ class EchoProvider {
 	}
 
 	/**
+	 *
+	 * @return {*}
+	 */
+	get extension() {
+		return this._extension;
+	}
+
+	/**
 	 * init provider connection
 	 * @return {Promise<void>}
 	 */
 	async init() {
-		await this.echo.connect(this.host, { apis: constants.WS_CONSTANTS.CHAIN_APIS });
-
+		// get access to echo instance and extension methods by clicking to Approve button in Bridge UI
+		try {
+			await this.extension.getAccess();
+		} catch (error) {
+			console.warn('The access to Bridge extension has been rejected previously. Clear your Bridge application data and try again.');
+			throw error;
+		}
 		// asset info initialization on provider init
+		if (this.echo.isConnected) {
+			await this.echo.disconnect();
+		}
+
+
+		// connecting to Bridge's extension network
+		await this.echo.connect();
+
 		const assetObject = await this.echo.api.getObject(this.asset.id);
+
 		if (!assetObject || !assetObject.precision) {
 			throw new Error(`unknown asset id: ${this.asset.id}`);
 		}
 
 		this.asset.precision = assetObject.precision;
 
-		/** @type {Dispatcher}*/
-		this._dispatcher = new Dispatcher(echo, this.asset);
+		/** @type {BridgeDispatcher}*/
+		this._dispatcher = new BridgeDispatcher(this._extension, this._echo, this.asset);
 	}
 
 	/**
@@ -87,10 +116,12 @@ class EchoProvider {
 	 */
 	sendAsync(payload, callback) {
 		if (!this._dispatcher) {
-			return callback(new Error('Init provider first'));
+			if (!this._dispatcher) {
+				return callback(new Error('Init provider first'));
+			}
 		}
-		const { method, params } = payload;
 
+		const { method, params } = payload;
 		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
 		if (!echoSpyMethod) {
@@ -105,6 +136,11 @@ class EchoProvider {
 				const formattedError = `Error during execution of ${method}: ${error}`;
 				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
 			});
+	}
+
+	async enable() {
+		const accounts = await this.extension.getAccounts();
+		return accounts.map((account) => addHexPrefix(addressToShortMemo(account.id)));
 	}
 
 	disconnect() {
@@ -130,4 +166,4 @@ class EchoProvider {
 
 }
 
-export default EchoProvider;
+export default BridgeProvider;
