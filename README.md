@@ -5,9 +5,11 @@
 
 ## Setup
 
-Firstly, for work with `echo-web3` you need to install `web3` version 0.2.3 and greater:  
+Firstly, for work with `echo-web3` you need to install `web3`. 
+
+Note: supported versions of `web3` are 0.20.3 - 0.20.7.  
 ```
-npm install web3@0.2.7
+npm install web3@0.20.7
 ```
 After you can install `echo-web3`:
 
@@ -219,6 +221,7 @@ as methods from original library. The list of implemented methods:
 ###### Before
 ```javascript
 import Transaction from 'ethereumjs-tx';
+
 ...
 
 const template = {
