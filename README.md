@@ -1,7 +1,7 @@
 
 # echo-web3
 
-``echo-web3`` is a wrapper over Web3 that allows you to use web3's instance methods by calling to ECHO blockchain
+``echo-web3`` is a wrapper over Web3 that allows you to use web3's instance methods by calling to Echo blockchain
 
 ## Setup
 
