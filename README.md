@@ -66,7 +66,7 @@ The signature of callback is:
 
 Async request (use as method with callback):
 * [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
-* getBlock *([only by number](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber))*
+*  [getBlock](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)
 * [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
 * [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
 * [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber) 

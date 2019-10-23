@@ -11,7 +11,7 @@ import { ECHO_NAME_PREFIX } from '../constants';
  * @return {string}
  */
 export const generateAccountNameByPublicKey = (publicKey) =>`${ECHO_NAME_PREFIX}${hash.sha256(publicKey, 'hex').slice(0, 20)}`;
-export const addressRegExp = new RegExp(`^1\\.(${constants.OBJECT_TYPES.CONTRACT}|${constants.OBJECT_TYPES.ACCOUNT})\\.(([1-9]\\d*)|0)$`);
+export const addressRegExp = new RegExp(`^1\\.(${constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT}|${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT})\\.(([1-9]\\d*)|0)$`);
 
 /**
  * @param {string} value
@@ -28,7 +28,7 @@ export function shortMemoToAddress(value) {
 	const isContract = _1stByte === '01';
 	const accountIndex = new BigNumber(value.substr(26), 16);
 	if (accountIndex.gte('2**32')) return `0x${accountIndex.toString(16).padStart(40, '0')}`;
-	return ['1', isContract ? constants.OBJECT_TYPES.CONTRACT : '2', accountIndex.toString(10)].join('.');
+	return ['1', isContract ? constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT : '2', accountIndex.toString(10)].join('.');
 }
 
 
@@ -44,7 +44,7 @@ export function addressToShortMemo(address) {
 	const [, instanceTypeId, objectId] = address.split('.').map((str) => new BigNumber(str, 10));
 	const preRes = objectId.toString(16);
 	if (preRes.length > 38) throw new Error('objectId is greater or equals to 2**152');
-	const isContract = instanceTypeId.eq(constants.OBJECT_TYPES.CONTRACT);
+	const isContract = instanceTypeId.eq(constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT);
 	return [
 		'0',
 		isContract ? '1' : '0',

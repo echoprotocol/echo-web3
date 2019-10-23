@@ -8,7 +8,8 @@ import {
 	GetCode,
 	BlockNumber,
 	GetLogs,
-	SendRawTransaction
+	SendRawTransaction,
+	GetBlockByHash
 } from '../methods';
 
 class Dispatcher {
@@ -35,6 +36,8 @@ class Dispatcher {
 				return new Call(this._echo, params, this._asset);
 			case 'eth_getBlockByNumber':
 				return new GetBlockByNumber(this._echo, params, this._asset);
+			case 'eth_getBlockByHash':
+				return new GetBlockByHash(this._echo, params, this._asset);
 			case 'eth_getBalance':
 				return new GetBalance(this._echo, params, this._asset);
 			case 'eth_sendRawTransaction':
