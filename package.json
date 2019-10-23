@@ -31,7 +31,8 @@
     "ethereumjs-wallet": "^0.6.3",
     "hdkey": "^1.1.1",
     "semver": "^6.3.0",
-    "to-hex": "^0.0.4"
+    "to-hex": "^0.0.4",
+    "web3": "^0.20.7"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
