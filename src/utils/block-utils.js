@@ -72,3 +72,11 @@ export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects
 
 	return ethereumBlock;
 };
+
+export const inputBlockNumberFormatter = (blockNumber) => {
+	if (blockNumber === undefined) {
+		return undefined;
+	}
+
+	return addHexPrefix(blockNumber.toString(16));
+};

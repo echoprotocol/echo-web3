@@ -2,6 +2,7 @@ import BridgeDispatcher from './dispatcher';
 import { ECHO_CONSTANTS } from '../../constants';
 import { addressToShortMemo } from '../../utils/address-utils';
 import { addHexPrefix } from '../../utils/converters-utils';
+import { createJsonRpcResponse } from '../../utils/json-rpc-utils';
 
 class BridgeProvider {
 
@@ -101,10 +102,10 @@ class BridgeProvider {
 
 		try {
 			const result = echoSpyMethod.execute();
-			return this._wrapAsJsonRpcResponse(payload, result);
+			return createJsonRpcResponse(payload.id, result);
 		} catch (error) {
 			const formattedError = `Error during execution of ${method}: ${error}`;
-			return this._wrapAsJsonRpcResponse(payload, null, formattedError);
+			return createJsonRpcResponse(payload.id, null, formattedError);
 		}
 	}
 
@@ -131,11 +132,11 @@ class BridgeProvider {
 
 		echoSpyMethod.execute()
 			.then(result => {
-				return callback(null, this._wrapAsJsonRpcResponse(payload, result));
+				return callback(null, createJsonRpcResponse(payload.id, result));
 			})
 			.catch(error => {
 				const formattedError = `Error during execution of ${method}: ${error}`;
-				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
+				return callback(createJsonRpcResponse(payload.id, null, formattedError));
 			});
 			
 		return true;
@@ -149,24 +150,6 @@ class BridgeProvider {
 	disconnect() {
 		return this._echo.disconnect();
 	}
-
-	/**
-	 *
-	 * @param {{method: String, id: Number|String}} payload
-	 * @param {*} result
-	 * @param {*?} error
-	 * @return {*}
-	 * @private
-	 */
-	_wrapAsJsonRpcResponse(payload, result, error) {
-		return {
-			id: payload.id,
-			jsonrpc: '2.0',
-			...error ? { error } : { result }
-		};
-	}
-
-
 }
 
 export default BridgeProvider;
