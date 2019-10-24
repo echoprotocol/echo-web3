@@ -3,7 +3,7 @@ import echo, { serializers } from 'echojs-lib';
 import { isValidHex } from '../../utils/validators';
 import { encodeTxHash } from '../../utils/transaction-utils';
 import Method from './abstract/method';
-import { addHexPrefix } from "../../utils/converters-utils";
+import { addHexPrefix } from '../../utils/converters-utils';
 class SendRawTransaction extends Method {
 
 	/**

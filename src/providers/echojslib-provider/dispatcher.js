@@ -9,7 +9,8 @@ import {
 	BlockNumber,
 	GetLogs,
 	SendRawTransaction,
-	GetBlockByHash
+	GetBlockByHash,
+	GetTransactionByHash
 } from '../methods';
 
 class Dispatcher {
@@ -48,6 +49,8 @@ class Dispatcher {
 				return new GetTransactionCount(this._echo, params, this._asset);
 			case 'eth_getTransactionReceipt':
 				return new GetTransactionReceipt(this._echo, params, this._asset);
+			case 'eth_getTransactionByHash':
+				return new GetTransactionByHash(this._echo, params, this._asset);
 			case 'eth_getCode':
 				return new GetCode(this._echo, params, this._asset);
 			case 'eth_getLogs':

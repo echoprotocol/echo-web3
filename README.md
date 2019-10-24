@@ -69,6 +69,7 @@ Async request (use as method with callback):
 *  [getBlock](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)
 * [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
 * [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
+* [getTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash)
 * [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber) 
 * [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
 * [GetTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
@@ -128,10 +129,11 @@ See description of method usage above.
 Async request (use as method with callback):
 * [sendTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction)
 * [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
-* getBlock *([only by number](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber))*
+*  [getBlock](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)
 * [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
 * [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
-* [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber) 
+* [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber)
+* [getTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash)
 * [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
 * [getTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
 * [getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)

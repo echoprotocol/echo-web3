@@ -7,5 +7,5 @@ export {
 	GetNetwork,
 	AccountsSyncBridge,
 	AccountsBridge,
-	SendTransactionBridge
+	SendTransactionBridge,
 };
