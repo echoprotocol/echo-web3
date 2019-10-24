@@ -10,6 +10,7 @@ import {
 	BlockNumber,
 	GetLogs,
 	SendRawTransaction,
+	GetTransactionByHash,
 } from '../methods';
 
 import { GetNetwork, AccountsBridge, AccountsSyncBridge, SendTransactionBridge } from './methods';
@@ -48,6 +49,8 @@ class BridgeDispatcher {
 				return new GetBalance(this._echo, params, this._asset);
 			case 'eth_blockNumber':
 				return new BlockNumber(this._echo, params, this._asset);
+			case 'eth_getTransactionByHash':
+				return new GetTransactionByHash(this._echo, params, this._asset);
 			case 'eth_getTransactionCount':
 				return new GetTransactionCount(this._echo, params, this._asset);
 			case 'eth_getTransactionReceipt':

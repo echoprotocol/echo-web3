@@ -9,17 +9,20 @@ import GetLogs from './get-logs';
 import BlockNumber from './block-number';
 import SendRawTransaction from './send-raw-transaction';
 import GetBlockByHash from './get-block-by-hash';
+import GetTransactionByHash from './get-transaction-by-hash';
 
 export {
 	GetBalance,
 	GasPrice,
 	Call,
 	GetTransactionCount,
+	GetTransactionByHash,
 	GetTransactionReceipt,
 	GetBlockByNumber,
 	GetBlockByHash,
 	GetCode,
 	BlockNumber,
 	GetLogs,
-	SendRawTransaction
+	SendRawTransaction,
 };
+

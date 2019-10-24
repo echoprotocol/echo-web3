@@ -58,6 +58,7 @@ class BridgeProvider {
 		try {
 			await this.extension.getAccess();
 		} catch (error) {
+			/* eslint-disable no-console */
 			console.warn('The access to Bridge extension has been rejected previously. Clear your Bridge application data and try again.');
 			throw error;
 		}
@@ -136,6 +137,8 @@ class BridgeProvider {
 				const formattedError = `Error during execution of ${method}: ${error}`;
 				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
 			});
+			
+		return true;
 	}
 
 	async enable() {

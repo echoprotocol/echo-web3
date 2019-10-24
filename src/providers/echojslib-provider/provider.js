@@ -105,6 +105,7 @@ class EchoProvider {
 				const formattedError = `Error during execution of ${method}: ${error}`;
 				return callback(this._wrapAsJsonRpcResponse(payload, null, formattedError));
 			});
+		return true;
 	}
 
 	disconnect() {
