@@ -99,17 +99,8 @@ class GetLogs extends Method {
 
 		let { fromBlock, toBlock } = options;
 
-		if (isValidHex(fromBlock)) {
-			fromBlock = Number(fromBlock);
-		} else if (fromBlock === 'earliest') {
-			fromBlock = 0;
-		}
-
-		if (isValidHex(toBlock)) {
-			toBlock = Number(toBlock);
-		} else if (toBlock === 'latest') {
-			toBlock = latestBlock;
-		}
+		fromBlock = isValidHex(fromBlock)? Number(fromBlock): latestBlock;
+		toBlock = isValidHex(toBlock)? Number(toBlock): latestBlock;
 
 		if (toBlock < fromBlock) throw new Error('toBlock is less than fromBlock');
 		if (toBlock > latestBlock) throw new Error('toBlock is greater than head ECHO block');
@@ -144,7 +135,7 @@ class GetLogs extends Method {
 				topics: topics.map((log)=>addHexPrefix(log)),
 				address: addHexPrefix(address),
 				transactionHash: addHexPrefix(encodeTxHash(blockNumber, txIndex, operationId)),
-				txIndex: addHexPrefix(txIndex.toString(16))
+				transactionIndex: addHexPrefix(txIndex.toString(16))
 			};
 		});
 	}

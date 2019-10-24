@@ -29,7 +29,7 @@ import Web3 from 'web3';
 import EchoWeb3, { EchoProvider } from 'echo-web3';
 
 // 1. wrap your web3 lib
-// Note: the minimum supported web3 version is 0.2.3 
+// Note: the minimum supported web3 version is 0.20.3 
 const WrappedWeb3 = EchoWeb3(Web3);
 
 // 2. define the echo network host
@@ -74,7 +74,7 @@ Async request (use as method with callback):
 * [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
 * [GetTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
 * [GetCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
-* [GetLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) *(works only with the fixed web3 version [link](https://github.com/toffick/web3.js/tree/fix-inputGetLogsFormatter-return-value))*
+* [GetLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs)
 
 Sync request (use as property):
 * [gasPrice](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gasprice) 
@@ -137,7 +137,7 @@ Async request (use as method with callback):
 * [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
 * [getTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
 * [getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
-* [getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) *(works only with the fixed web3 version [link](https://github.com/toffick/web3.js/tree/fix-inputGetLogsFormatter-return-value))*
+* [getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs)
 * [getNetwork](https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version)
 
 Sync request (use as property):

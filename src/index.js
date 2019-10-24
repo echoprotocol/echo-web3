@@ -6,7 +6,10 @@ import EthereumjsTx from './echo-ethereumjs-tx';
 import { getEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
 import * as transactionUtils from './utils/transaction-utils';
-import { overrideWeb3CoreMethodsByBridge } from './web3-overrider.js';
+import {
+	overrideWeb3CoreMethodsByBridge,
+	overrideWeb3EthGetLogs
+} from './web3-overrider.js';
 
 
 /** @typedef {
@@ -54,6 +57,7 @@ const EchoWeb3 = (Web3Class) => {
 					overrideWeb3CoreMethodsByBridge(this, provider.extension);
 				}
 
+				overrideWeb3EthGetLogs(this, provider);
 				// set provider if web3 version isn't least than supported and provider can works with echo network
 				this.setProvider(provider);
 			} else {
@@ -62,14 +66,13 @@ const EchoWeb3 = (Web3Class) => {
 
 			// wrap Ethereumjs-wallet classes with connected ECHO instance
 			this._ethereumjsWallet = getEthWalletLib(provider.echo);
-
 		}
 
 		get ethereumjsWallet() {
 			return this._ethereumjsWallet;
 		}
 
-		set ethereumjsWallet(value) {}
+		set ethereumjsWallet(value) { }
 
 		get EthereumjsTx() {
 			const { echo, asset } = this.currentProvider;
