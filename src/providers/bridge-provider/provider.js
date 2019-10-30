@@ -16,6 +16,7 @@ class BridgeProvider {
 		this.isMetaMask = true;
 		// for private using of echo-web3
 		this.isBridgeCore = true;
+		this.echoUtilMethods = null;
 		const { echojslib } = window;
 		if (!(echojslib && echojslib.isEchoBridge)) {
 			throw new Error('Bridge extension wasn\'t provided');
@@ -23,7 +24,6 @@ class BridgeProvider {
 
 		this._echo = echojslib.echo;
 		this._extension = echojslib.extension;
-
 		this._dispatcher = null;
 
 
@@ -104,7 +104,7 @@ class BridgeProvider {
 			const result = echoSpyMethod.execute();
 			return createJsonRpcResponse(payload.id, result);
 		} catch (error) {
-			const formattedError = `Error during execution of ${method}: ${error}`;
+			const formattedError = `Error during execution of ${method}: ${error.message || error}`;
 			return createJsonRpcResponse(payload.id, null, formattedError);
 		}
 	}
@@ -127,7 +127,7 @@ class BridgeProvider {
 		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
 		if (!echoSpyMethod) {
-			return callback(`method ${method} not implemented, params ${JSON.stringify(params, null, 1)}`);
+			return callback(new Error(`method ${method} not implemented, params ${JSON.stringify(params, null, 1)}`));
 		}
 
 		echoSpyMethod.execute()
@@ -135,10 +135,10 @@ class BridgeProvider {
 				return callback(null, createJsonRpcResponse(payload.id, result));
 			})
 			.catch(error => {
-				const formattedError = `Error during execution of ${method}: ${error}`;
+				const formattedError = `Error during execution of ${method}: ${error.message || error}`;
 				return callback(createJsonRpcResponse(payload.id, null, formattedError));
 			});
-			
+
 		return true;
 	}
 
@@ -150,6 +150,7 @@ class BridgeProvider {
 	disconnect() {
 		return this._echo.disconnect();
 	}
+
 }
 
 export default BridgeProvider;

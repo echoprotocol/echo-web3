@@ -1,4 +1,4 @@
-import { addHexPrefix } from './converters-utils';
+import { addHexPrefix, cutHexPrefix } from './converters-utils';
 import { isValidIdentificationHash } from './validators';
 import { HASH_IDENTIFIERS } from '../constants';
 import { encodeTxHash, mapEchoTxResultToEth } from './transaction-utils';
@@ -25,7 +25,7 @@ export const encodeBlockHash = (blockNumber) => {
 export const decodeBlockHash = (hash) => {
 	if (!isValidIdentificationHash(hash)) throw new Error(`invalid block hash string: ${hash}`);
 	if (!/0{54}$/.test(hash)) throw new Error('invalid hex 64 symbols hash string');
-	const hashBuffer = Buffer.from(hash.slice(2), 'hex');
+	const hashBuffer = Buffer.from(cutHexPrefix(hash), 'hex');
 	const hashIdentifier = hashBuffer.readUInt8(0);
 	const blockNumber = hashBuffer.readUInt32LE(1);
 	if (hashIdentifier !== HASH_IDENTIFIERS.BLOCK) {

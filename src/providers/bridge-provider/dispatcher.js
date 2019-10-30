@@ -11,9 +11,10 @@ import {
 	GetLogs,
 	SendRawTransaction,
 	GetTransactionByHash,
+	AccountKeys,
 } from '../methods';
 
-import { GetNetwork, AccountsBridge, AccountsSyncBridge, SendTransactionBridge } from './methods';
+import { GetNetwork, AccountsBridge, AccountsSyncBridge, SendTransactionBridge, PersonalSignBridge } from './methods';
 
 class BridgeDispatcher {
 
@@ -65,6 +66,10 @@ class BridgeDispatcher {
 				return new GetNetwork(this._extension, this._echo, params, this._asset);
 			case 'eth_accounts':
 				return new AccountsBridge(this._extension, this._echo, params, this._asset);
+			case 'personal_sign':
+				return new PersonalSignBridge(this._extension, this._echo, params, this._asset);
+			case 'echo_accountKeys':
+				return new AccountKeys(this._echo, params, this._asset);
 			default:
 				return null;
 		}

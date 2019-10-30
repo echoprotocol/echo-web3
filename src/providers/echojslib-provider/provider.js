@@ -74,7 +74,7 @@ class EchoProvider {
 			const result = echoSpyMethod.execute();
 			return createJsonRpcResponse(payload.id, result);
 		} catch (error) {
-			const formattedError = `Error during execution of ${method}: ${error}`;
+			const formattedError = `Error during execution of ${method}: ${error.message || error}`;
 			return createJsonRpcResponse(payload.id, null, formattedError);
 		}
 	}
@@ -95,7 +95,7 @@ class EchoProvider {
 		const echoSpyMethod = this._dispatcher.resolveMethod(method, params);
 
 		if (!echoSpyMethod) {
-			return callback(`method ${method} not implemented, params ${JSON.stringify(params, null, 1)}`);
+			return callback(new Error(`method ${method} not implemented, params ${JSON.stringify(params, null, 1)}`));
 		}
 
 		echoSpyMethod.execute()
@@ -103,7 +103,7 @@ class EchoProvider {
 				return callback(null, createJsonRpcResponse(payload.id, result));
 			})
 			.catch(error => {
-				const formattedError = `Error during execution of ${method}: ${error}`;
+				const formattedError = `Error during execution of ${method}: ${error.message || error}`;
 				return callback(createJsonRpcResponse(payload, null, formattedError));
 			});
 		return true;

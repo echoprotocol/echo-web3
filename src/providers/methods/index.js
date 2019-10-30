@@ -10,6 +10,7 @@ import BlockNumber from './block-number';
 import SendRawTransaction from './send-raw-transaction';
 import GetBlockByHash from './get-block-by-hash';
 import GetTransactionByHash from './get-transaction-by-hash';
+import AccountKeys from './account-keys';
 
 export {
 	GetBalance,
@@ -24,5 +25,6 @@ export {
 	BlockNumber,
 	GetLogs,
 	SendRawTransaction,
+	AccountKeys
 };
 
