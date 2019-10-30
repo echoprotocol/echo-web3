@@ -5,6 +5,7 @@ class GetNetwork extends BridgeMethod {
 	constructor(...args){
 		super(...args);
 
+		// TODO move to config
 		this.networkMapping = {
 			'': 1, // mainnet
 			'e63b8287f9ae25a433dc4892e2f193167993c04f1f8b24aedce356a570f0facb': 3, // ropsten

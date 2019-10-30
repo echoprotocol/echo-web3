@@ -1,6 +1,6 @@
 import { constants } from 'echojs-lib';
 import { addressToShortMemo, shortMemoToAddress } from './address-utils';
-import { addHexPrefix, assetValueToWei, weiValueToAssert } from './converters-utils';
+import { addHexPrefix,cutHexPrefix, assetValueToWei, weiValueToAssert } from './converters-utils';
 import { NATHAN_ID } from '../constants/echo-constants';
 import { isValidData, isValidIdentificationHash } from './validators';
 import { HASH_IDENTIFIERS } from '../constants';
@@ -16,7 +16,7 @@ export const mapEthTxForCall = (ethTx) => {
 	const { to, data } = ethTx;
 	if (data && !isValidData(data)) throw new Error('invalid "data" field');
 	const contractId = shortMemoToAddress(to);
-	return { contractId, registrar: NATHAN_ID, code: data.slice(2) };
+	return { contractId, registrar: NATHAN_ID, code: cutHexPrefix(data) };
 };
 
 /**
@@ -171,7 +171,7 @@ export const encodeTxHash = (blockNumber, txIndex, operationId) => {
 export const decodeTxHash = (hash) => {
 	if (!isValidIdentificationHash(hash)) throw new Error(`invalid tx hash string: ${hash}`);
 	if (!/0{48}$/.test(hash)) throw new Error('invalid hex 64 symbols hash string');
-	const hashBuffer = Buffer.from(hash.slice(2), 'hex');
+	const hashBuffer = Buffer.from(cutHexPrefix(hash), 'hex');
 	const hashIdentifier = hashBuffer.readUInt8(0);
 	const operationId = hashBuffer.readUInt8(1);
 	const blockNumber = hashBuffer.readUInt32LE(2);
