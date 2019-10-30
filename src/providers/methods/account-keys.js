@@ -3,7 +3,6 @@ import { shortMemoToAddress } from '../../utils/address-utils';
 import { isValidAddress } from '../../utils/validators';
 import { decode } from 'bs58';
 
-//TODO:: add docs
 class AccountKeys extends Method {
 
 	/**

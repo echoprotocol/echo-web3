@@ -274,6 +274,25 @@ const WrappedWeb3 = EchoWeb3(Web3);
 })();
 
 ```
+## Specific ECHO RPC methods
+
+For both providers have been implemented additional JSON RPC methods:
+
+```echo_accountKeys```
+
+
+```javascript
+// Request
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_coinbase","params":["0x010000000000000000000000000000000000014d"],"id":64}'
+
+// Result
+{
+  "id":64,
+  "jsonrpc": "2.0",
+  "result": ["0xe1c964148ede57465478780707a6e1aef12b5ddc47774028166dc67f3bf580ec", "0xa7c964148ede57465478780707a6e1aef12b5ddc47774028166dc67f3bf58022"]
+}
+
+```
 
 
 ## License

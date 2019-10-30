@@ -55,6 +55,8 @@ class Dispatcher {
 				return new GetCode(this._echo, params, this._asset);
 			case 'eth_getLogs':
 				return new GetLogs(this._echo, params, this._asset);
+			case 'echo_accountKeys':
+				return new AccountKeys(this._echo, params, this._asset);
 			default:
 				return null;
 		}
