@@ -36,17 +36,17 @@ export const mapEthTxToEcho = (ethTx, asset) => {
 	};
 
 	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
-	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toNumber() || 0;
+	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toFixed(0) || 0;
 
 	if (to && data) {
 		options.callee = shortMemoToAddress(to);
 		options.registrar = shortMemoToAddress(from);
-		options.code = data;
+		options.code = cutHexPrefix(data);
 		options.value = { asset_id: asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.CONTRACT_CALL;
 	} else if (from && data) {
 		options.registrar = shortMemoToAddress(from);
-		options.code = data;
+		options.code = cutHexPrefix(data);
 		options.value = { asset_id: asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.CONTRACT_CREATE;
 		options.eth_accuracy = false;

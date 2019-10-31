@@ -2,6 +2,7 @@ import Method from './abstract/method';
 import { toDecimal } from '../../utils/converters-utils';
 import { mapEchoBlockResultToEth } from '../../utils/block-utils';
 import { isValidHex } from '../../utils/validators';
+import BlockNumber from './block-number';
 
 class GetBlockByNumber extends Method {
 
@@ -10,7 +11,7 @@ class GetBlockByNumber extends Method {
 	 * @return {Promise}
 	 */
 	async execute() {
-		const { blockNumber, includeTx } = this._formatInput();
+		const { blockNumber, includeTx } = await this._formatInput();
 
 		const block = await this.api.getBlock(blockNumber);
 
@@ -26,13 +27,18 @@ class GetBlockByNumber extends Method {
 	 * @return {{blockNumber: number}}
 	 * @private
 	 */
-	_formatInput() {
+	async _formatInput() {
 		const [blockNumberHex, includeTx] = this.params;
-		if(!isValidHex(blockNumberHex)){
+		
+		let blockNumber;
+		if(isValidHex(blockNumberHex)){
+			blockNumber = toDecimal(blockNumberHex);
+		} else if (blockNumberHex === 'latest'){
+			blockNumber = await (new BlockNumber(this.echo)).execute();
+		} else{
 			throw new Error('invalid block number');
 		}
 
-		const blockNumber = toDecimal(blockNumberHex);
 		return { blockNumber, includeTx };
 	}
 

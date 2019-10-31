@@ -33,7 +33,7 @@ class Method {
 	}
 
 	execute() {
-
+		this._formatOutput();
 	}
 
 	/**

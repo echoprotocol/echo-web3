@@ -9,7 +9,7 @@ class GetNetwork extends BridgeMethod {
 	 */
 	async execute() {
 		const networkResult = await this.extension.getCurrentNetwork();
-		return this._formatOutput(this.NETWORK_ID_MAPPING[networkResult.chainId] || networkResult.chainId);
+		return this._formatOutput(NETWORK_ID_MAPPING[networkResult.chainId] || networkResult.chainId);
 	}
 
 }

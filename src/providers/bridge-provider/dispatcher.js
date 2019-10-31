@@ -12,6 +12,7 @@ import {
 	SendRawTransaction,
 	GetTransactionByHash,
 	AccountKeys,
+	EstimateGas,
 } from '../methods';
 
 import { GetNetwork, AccountsBridge, AccountsSyncBridge, SendTransactionBridge, PersonalSignBridge } from './methods';
@@ -70,6 +71,8 @@ class BridgeDispatcher {
 				return new PersonalSignBridge(this._extension, this._echo, params, this._asset);
 			case 'echo_accountKeys':
 				return new AccountKeys(this._echo, params, this._asset);
+			case 'eth_estimateGas':
+				return new EstimateGas(this._echo, params, this._asset);
 			default:
 				return null;
 		}

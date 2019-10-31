@@ -5,12 +5,13 @@ import BridgeProvider from './providers/bridge-provider';
 import EthereumjsTx from './echo-ethereumjs-tx';
 import { getEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
-import * as transactionUtils from './utils/transaction-utils';
+import * as echojslib from 'echojs-lib';
+
 import {
 	overrideWeb3CoreMethodsByBridge,
 	overrideWeb3EthGetLogs
 } from './web3-overrider.js';
-
+import * as utils from './utils';
 
 /** @typedef {
 *	{
@@ -98,7 +99,8 @@ export {
 	EchoProvider,
 	BridgeProvider,
 	EthereumjsTx,
-	transactionUtils
+	utils,
+	echojslib
 };
 
 export default EchoWeb3;
