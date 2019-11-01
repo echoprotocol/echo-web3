@@ -20,9 +20,9 @@
     "url": "https://github.com/echoprotocol/echo-web3/issues"
   },
   "keywords": [
-    "blip",
-    "wallet",
-    "echo"
+    "echo",
+    "web3",
+    "web3-wrapper"
   ],
   "homepage": "https://github.com/echoprotocol/echo-web3",
   "dependencies": {
