@@ -20,6 +20,7 @@ export const assetValueToWei = (value, assetPrecision = ECHO_CONSTANTS.DEFAULT_A
  * @return {BigNumber}
  */
 export const weiValueToAssert = (value, assetPrecision = ECHO_CONSTANTS.DEFAULT_ASSET_PRECISION) => {
+	if (!value) return new BigNumber(0);
 	const precisionDelta = ETH_CONSTANTS.ETH_PRECISION - assetPrecision;
 	const devider = new BigNumber(10).pow(precisionDelta);
 	const valueBN = typeof value === 'string' ? new BigNumber(cutHexPrefix(value), 16) : new BigNumber(value, 10);

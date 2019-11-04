@@ -28,13 +28,12 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "bs58": "^4.0.1",
-    "echojs-lib": "^1.9.1-echo.12-rc.2",
+    "echojs-lib": "^1.9.1-echo.12-rc.6",
     "ethereumjs-wallet": "^0.6.3",
     "hdkey": "^1.1.1",
     "keccak": "^2.0.0",
     "semver": "^6.3.0",
-    "to-hex": "^0.0.4",
-    "web3": "^0.20.7"
+    "to-hex": "^0.0.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
