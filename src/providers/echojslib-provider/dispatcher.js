@@ -13,6 +13,7 @@ import {
 	GetTransactionByHash,
 	AccountKeys,
 	EstimateGas,
+	GetNetwork,
 } from '../methods';
 
 class Dispatcher {
@@ -61,6 +62,8 @@ class Dispatcher {
 				return new AccountKeys(this._echo, params, this._asset);
 			case 'eth_estimateGas':
 				return new EstimateGas(this._echo, params, this._asset);
+			case 'net_version':
+				return new GetNetwork(this._echo, params, this._asset);
 			default:
 				return null;
 		}

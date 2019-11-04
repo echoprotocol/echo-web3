@@ -12,6 +12,7 @@ import GetBlockByHash from './get-block-by-hash';
 import GetTransactionByHash from './get-transaction-by-hash';
 import AccountKeys from './account-keys';
 import EstimateGas from './estimate-gas';
+import GetNetwork from './net-version';
 
 export {
 	GetBalance,
@@ -27,6 +28,7 @@ export {
 	GetLogs,
 	SendRawTransaction,
 	AccountKeys,
-	EstimateGas
+	EstimateGas,
+	GetNetwork
 };
 
