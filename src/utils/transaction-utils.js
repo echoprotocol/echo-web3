@@ -12,13 +12,15 @@ import { encodeBlockHash } from './block-utils';
  * @param {EthereumTransaction} ethTx
  * @return {{contractId: string, registrar: string, code: string}}
  */
-export const mapEthTxForCall = (ethTx) => {
+export const mapEthTxForCall = (ethTx, asset) => {
 	if (!ethTx || typeof ethTx !== 'object') throw new Error('transaction is not an object');
-	const { to, from, data } = ethTx;
+	const { to, from, data, value } = ethTx;
 	if (data && !isValidData(data)) throw new Error('invalid "data" field');
 	const contractId = shortMemoToAddress(to);
 	const registrarId = from ? shortMemoToAddress(from) : NATHAN_ID;
-	return { contractId, registrarId, code: cutHexPrefix(data) };
+	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
+	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toFixed(0, BigNumber.ROUND_DOWN) || 0;
+	return { contractId, registrarId, code: cutHexPrefix(data), amount: valueWithAssetAccuracy };
 };
 
 /**
