@@ -26,7 +26,7 @@ class GetLogs extends Method {
 			opts.topics = topics.map((topic) => cutHexPrefix(topic));
 		}
 
-		const res = await this.api.getContractLogs2(opts);
+		const res = await this.api.getContractLogs(opts);
 
 		return this._formatOutput(res);
 	}
@@ -53,15 +53,14 @@ class GetLogs extends Method {
 		
 			fromBlock = Number(fromBlock) || latestBlock;
 			toBlock = Number(toBlock) || latestBlock;
-			
-			if (toBlock < fromBlock) throw new Error('toBlock is less than fromBlock');
-			if (toBlock > latestBlock) throw new Error('toBlock is greater than head ECHO block');
 		}
 
 		// NOTE:: echo chain interpreters `[fromBlock, toBlock]` is empty range, if  fromBlock === toBlock
 		// we need to decrease left side of range for getting of toBlock's logs
 		// according with this behaviour we need to decrease fromBlock every time 
 		fromBlock -=1;
+
+		if (toBlock < fromBlock) throw new Error('toBlock is less than fromBlock');
 
 		return { fromBlock, toBlock, address, topics };
 	}
