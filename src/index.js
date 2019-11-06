@@ -53,8 +53,8 @@ const EchoWeb3 = (Web3Class) => {
 				throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);
 			}
 
-			if (provider.isEchoProvider || provider.isBridgeCore) {
-				if (provider.isBridgeCore) {
+			if (provider.isEchoProvider || provider._isBridgeCore) {
+				if (provider._isBridgeCore) {
 					overrideWeb3CoreMethodsByBridge(this, provider.extension);
 				}
 

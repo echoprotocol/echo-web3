@@ -1,4 +1,4 @@
-import BridgeMethod from '../../methods/abstract/bridge-method';
+import BridgeMethod from '../../abstract/bridge-method';
 import { shortMemoToAddress } from '../../../utils/address-utils';
 import { addHexPrefix, cutHexPrefix } from '../../../utils/converters-utils';
 import { hashPersonalMessage } from '../../../utils/hash-utils';

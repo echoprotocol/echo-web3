@@ -1,4 +1,4 @@
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { shortMemoToAddress } from '../../utils/address-utils';
 import { addHexPrefix, cutHexPrefix } from '../../utils/converters-utils';
 

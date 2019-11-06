@@ -1,6 +1,6 @@
 import { constants } from 'echojs-lib';
 
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { isValidHex } from '../../utils/validators';
 import { decodeTxHash } from '../../utils/transaction-utils';
 import { mapEchoTxReceiptResultToEth } from '../../utils/transaction-utils';

@@ -1,4 +1,4 @@
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { isValidHex } from '../../utils/validators';
 import { decodeTxHash, mapEchoTxResultToEth } from '../../utils/transaction-utils';
 

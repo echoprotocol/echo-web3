@@ -1,6 +1,6 @@
+import BridgeMethod from '../../abstract/bridge-method';
 import { addHexPrefix } from '../../../utils/converters-utils';
 import { addressToShortMemo } from '../../../utils/address-utils';
-import BridgeMethod from '../../methods/abstract/bridge-method';
 
 class AccountsBridge extends BridgeMethod {
 

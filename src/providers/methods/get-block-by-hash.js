@@ -1,4 +1,4 @@
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { mapEchoBlockResultToEth, decodeBlockHash } from '../../utils/block-utils';
 import { isValidHex } from '../../utils/validators';
 

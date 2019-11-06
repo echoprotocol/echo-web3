@@ -1,4 +1,4 @@
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { toDecimal } from '../../utils/converters-utils';
 import { mapEchoBlockResultToEth } from '../../utils/block-utils';
 import { isValidHex } from '../../utils/validators';

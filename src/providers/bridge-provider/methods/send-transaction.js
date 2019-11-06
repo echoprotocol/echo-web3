@@ -1,4 +1,4 @@
-import BridgeMethod from '../../methods/abstract/bridge-method';
+import BridgeMethod from '../../abstract/bridge-method';
 import { encodeTxHash, mapEthTxToEcho } from '../../../utils/transaction-utils';
 import { addHexPrefix } from '../../../utils/converters-utils';
 
@@ -13,6 +13,10 @@ class SendTransactionBridge extends BridgeMethod {
 
 		const tx = this.echo.createTransaction()
 			.addOperation(operationId, options);
+
+		await tx.setRequiredFees();
+		// TODO:: sometimes calling of 0x contracts throwed a OutOfGas error 
+		tx._operations[0][1].fee.amount += 20; 
 
 		await tx.signWithBridge();
 
@@ -46,3 +50,4 @@ class SendTransactionBridge extends BridgeMethod {
 }
 
 export default SendTransactionBridge;
+
