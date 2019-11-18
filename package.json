@@ -1,14 +1,13 @@
 {
   "name": "echo-web3",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The wrapper over the Web3 that helps you to save your DAPP's code with calling to web3 methods by call to ECHO blockchain",
   "main": "./dist/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
     "build": "npx babel src --out-dir dist --copy-files",
     "lint": "eslint .",
-    "install": "npm run build",
-    "prepublishOnly": "npm run build"
+    "prepublish": "npm run build"
   },
   "author": {
     "name": "PixelPlex, Inc.",
@@ -28,7 +27,7 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "bs58": "^4.0.1",
-    "echojs-lib": "1.9.1-echo.12-rc.9",
+    "echojs-lib": "1.9.3",
     "ethereumjs-wallet": "^0.6.3",
     "hdkey": "^1.1.1",
     "keccak": "^2.0.0",
