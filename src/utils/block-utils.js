@@ -1,4 +1,4 @@
-import { addHexPrefix } from './converters-utils';
+import { addHexPrefix, cutHexPrefix } from './converters-utils';
 import { isValidIdentificationHash } from './validators';
 import { HASH_IDENTIFIERS } from '../constants';
 import { encodeTxHash, mapEchoTxResultToEth } from './transaction-utils';
@@ -25,7 +25,7 @@ export const encodeBlockHash = (blockNumber) => {
 export const decodeBlockHash = (hash) => {
 	if (!isValidIdentificationHash(hash)) throw new Error(`invalid block hash string: ${hash}`);
 	if (!/0{54}$/.test(hash)) throw new Error('invalid hex 64 symbols hash string');
-	const hashBuffer = Buffer.from(hash.slice(2), 'hex');
+	const hashBuffer = Buffer.from(cutHexPrefix(hash), 'hex');
 	const hashIdentifier = hashBuffer.readUInt8(0);
 	const blockNumber = hashBuffer.readUInt32LE(1);
 	if (hashIdentifier !== HASH_IDENTIFIERS.BLOCK) {
@@ -55,7 +55,7 @@ export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects
 	ethereumBlock.sha3Uncles = addHexPrefix();
 	ethereumBlock.size = JSON.stringify(echoBlock).length; // TODO need to serialize to buffer ang get the length from it
 	ethereumBlock.stateRoot = addHexPrefix();
-	ethereumBlock.timestamp = parseInt(new Date(timestamp).getTime() / 1000);
+	ethereumBlock.timestamp = parseInt(new Date(timestamp).getTime() / 1000, 10);
 	ethereumBlock.totalDifficulty = addHexPrefix(0);
 	ethereumBlock.transactionsRoot = addHexPrefix(txRoot);
 	ethereumBlock.uncles = [];
@@ -71,4 +71,12 @@ export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects
 	}
 
 	return ethereumBlock;
+};
+
+export const inputBlockNumberFormatter = (blockNumber) => {
+	if (blockNumber === undefined) {
+		return undefined;
+	}
+
+	return addHexPrefix(blockNumber.toString(16));
 };

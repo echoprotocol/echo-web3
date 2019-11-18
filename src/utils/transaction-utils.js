@@ -1,6 +1,7 @@
 import { constants } from 'echojs-lib';
+import BigNumber from 'bignumber.js';
 import { addressToShortMemo, shortMemoToAddress } from './address-utils';
-import { addHexPrefix, assetValueToWei, weiValueToAssert } from './converters-utils';
+import { addHexPrefix, cutHexPrefix, assetValueToWei, weiValueToAssert } from './converters-utils';
 import { NATHAN_ID } from '../constants/echo-constants';
 import { isValidData, isValidIdentificationHash } from './validators';
 import { HASH_IDENTIFIERS } from '../constants';
@@ -11,12 +12,15 @@ import { encodeBlockHash } from './block-utils';
  * @param {EthereumTransaction} ethTx
  * @return {{contractId: string, registrar: string, code: string}}
  */
-export const mapEthTxForCall = (ethTx) => {
+export const mapEthTxForCall = (ethTx, asset) => {
 	if (!ethTx || typeof ethTx !== 'object') throw new Error('transaction is not an object');
-	const { to, data } = ethTx;
+	const { to, from, data, value } = ethTx;
 	if (data && !isValidData(data)) throw new Error('invalid "data" field');
 	const contractId = shortMemoToAddress(to);
-	return { contractId, registrar: NATHAN_ID, code: data.slice(2) };
+	const registrarId = from ? shortMemoToAddress(from) : NATHAN_ID;
+	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
+	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toFixed(0, BigNumber.ROUND_DOWN) || 0;
+	return { contractId, registrarId, code: cutHexPrefix(data), amount: valueWithAssetAccuracy };
 };
 
 /**
@@ -36,20 +40,21 @@ export const mapEthTxToEcho = (ethTx, asset) => {
 	};
 
 	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
-	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toNumber() || 0;
+	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toFixed(0, BigNumber.ROUND_DOWN) || 0;
 
 	if (to && data) {
 		options.callee = shortMemoToAddress(to);
 		options.registrar = shortMemoToAddress(from);
-		options.code = data;
+		options.code = cutHexPrefix(data);
 		options.value = { asset_id: asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.CONTRACT_CALL;
 	} else if (from && data) {
 		options.registrar = shortMemoToAddress(from);
-		options.code = data;
+		options.code = cutHexPrefix(data);
 		options.value = { asset_id: asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.CONTRACT_CREATE;
-		options.eth_accuracy = false;
+		options.eth_accuracy = true;
+		options.supported_asset_id = '1.3.0';
 	} else if (from && to) {
 		options.to = shortMemoToAddress(to);
 		options.from = shortMemoToAddress(from);
@@ -81,13 +86,13 @@ export const mapEchoTxResultToEth = (echoTx, blockNumber, txIndex, asset) => {
 	ethereumTransaction.gasPrice = 0;
 	ethereumTransaction.hash = addHexPrefix(encodeTxHash(blockNumber, txIndex, operationId));
 	ethereumTransaction.input =
-	ethereumTransaction.nonce = 0;
+		ethereumTransaction.nonce = 0;
 	ethereumTransaction.transactionIndex = txIndex;
 	ethereumTransaction.r = addHexPrefix();
 	ethereumTransaction.s = addHexPrefix();
 	ethereumTransaction.v = addHexPrefix();
 
-	if(operationId === constants.OPERATIONS_IDS.CONTRACT_CALL){
+	if (operationId === constants.OPERATIONS_IDS.CONTRACT_CALL) {
 		ethereumTransaction.to = addHexPrefix(addressToShortMemo(targetOperation.callee));
 		ethereumTransaction.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
 		ethereumTransaction.data = targetOperation.code;
@@ -133,7 +138,7 @@ export const mapEchoTxReceiptResultToEth = (echoTx, blockNumber, newAddress, blo
 	ethereumTransactionReceipt.transactionHash = transactionHash;
 	ethereumTransactionReceipt.transactionIndex = transactionIndex;
 
-	if(operationId === constants.OPERATIONS_IDS.CONTRACT_CALL){
+	if (operationId === constants.OPERATIONS_IDS.CONTRACT_CALL) {
 		ethereumTransactionReceipt.to = addHexPrefix(addressToShortMemo(targetOperation.callee));
 		ethereumTransactionReceipt.from = addHexPrefix(addressToShortMemo(targetOperation.registrar));
 	} else if (operationId === constants.OPERATIONS_IDS.CONTRACT_CREATE) {
@@ -171,7 +176,7 @@ export const encodeTxHash = (blockNumber, txIndex, operationId) => {
 export const decodeTxHash = (hash) => {
 	if (!isValidIdentificationHash(hash)) throw new Error(`invalid tx hash string: ${hash}`);
 	if (!/0{48}$/.test(hash)) throw new Error('invalid hex 64 symbols hash string');
-	const hashBuffer = Buffer.from(hash.slice(2), 'hex');
+	const hashBuffer = Buffer.from(cutHexPrefix(hash), 'hex');
 	const hashIdentifier = hashBuffer.readUInt8(0);
 	const operationId = hashBuffer.readUInt8(1);
 	const blockNumber = hashBuffer.readUInt32LE(2);

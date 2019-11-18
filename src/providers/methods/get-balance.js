@@ -1,6 +1,7 @@
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { shortMemoToAddress } from '../../utils/address-utils';
-import { assetValueToWei } from '../../utils/converters-utils';
+import { assetValueToWei, cutHexPrefix } from '../../utils/converters-utils';
+
 
 class GetBalance extends Method {
 
@@ -28,7 +29,7 @@ class GetBalance extends Method {
 	 */
 	_formatInput() {
 		const [ethAddress] = this.params;
-		const accountId = shortMemoToAddress(ethAddress.slice(2));
+		const accountId = shortMemoToAddress(cutHexPrefix(ethAddress));
 		return { accountId };
 	}
 

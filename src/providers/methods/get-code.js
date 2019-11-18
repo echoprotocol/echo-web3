@@ -1,6 +1,6 @@
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { shortMemoToAddress } from '../../utils/address-utils';
-import { addHexPrefix} from '../../utils/converters-utils';
+import { addHexPrefix, cutHexPrefix } from '../../utils/converters-utils';
 
 class GetCode extends Method {
 
@@ -17,7 +17,7 @@ class GetCode extends Method {
 			return this._formatOutput('0');
 		}
 
-		const [,{code}] = contract;
+		const [, { code }] = contract;
 		return this._formatOutput(code);
 	}
 
@@ -28,7 +28,7 @@ class GetCode extends Method {
 	 */
 	_formatInput() {
 		const [ethAddress] = this.params;
-		const contractAddress = shortMemoToAddress(ethAddress.slice(2));
+		const contractAddress = shortMemoToAddress(cutHexPrefix(ethAddress));
 		return { contractAddress };
 	}
 

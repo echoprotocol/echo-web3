@@ -1,4 +1,4 @@
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { addHexPrefix } from '../../utils/converters-utils';
 
 class GetBalance extends Method {

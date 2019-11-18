@@ -1,4 +1,4 @@
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { addHexPrefix } from '../../utils/converters-utils';
 import { mapEthTxForCall } from '../../utils/transaction-utils';
 
@@ -9,8 +9,9 @@ class Call extends Method {
 	 * @return {Promise}
 	 */
 	async execute() {
-		const {contractId, registrar, code} = this._formatInput();
-		const rawResult = await this.api.callContractNoChangingState(contractId, registrar, this.asset.id, code);
+		const { contractId, registrarId, code, amount } = this._formatInput();
+		const asset = { asset_id: this.asset.id, amount };
+		const rawResult = await this.api.callContractNoChangingState(contractId, registrarId, asset, code);
 		return this._formatOutput(rawResult);
 	}
 
@@ -21,8 +22,8 @@ class Call extends Method {
 	 */
 	_formatInput() {
 		const [ethTx] = this.params;
-		const {contractId, registrar, code} = mapEthTxForCall(ethTx);
-		return {contractId, registrar, code};
+		const { contractId, registrarId, code, amount } = mapEthTxForCall(ethTx, this.asset);
+		return { contractId, registrarId, code, amount };
 	}
 
 	/**

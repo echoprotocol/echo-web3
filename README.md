@@ -29,7 +29,7 @@ import Web3 from 'web3';
 import EchoWeb3, { EchoProvider } from 'echo-web3';
 
 // 1. wrap your web3 lib
-// Note: the minimum supported web3 version is 0.2.3 
+// Note: the minimum supported web3 version is 0.20.3 
 const WrappedWeb3 = EchoWeb3(Web3);
 
 // 2. define the echo network host
@@ -66,14 +66,15 @@ The signature of callback is:
 
 Async request (use as method with callback):
 * [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
-* getBlock *([only by number](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber))*
+*  [getBlock](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)
 * [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
 * [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
+* [getTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash)
 * [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber) 
 * [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
 * [GetTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
 * [GetCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
-* [GetLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) *(works only with the fixed web3 version [link](https://github.com/toffick/web3.js/tree/fix-inputGetLogsFormatter-return-value))*
+* [GetLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs)
 
 Sync request (use as property):
 * [gasPrice](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gasprice) 
@@ -128,14 +129,15 @@ See description of method usage above.
 Async request (use as method with callback):
 * [sendTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction)
 * [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
-* getBlock *([only by number](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber))*
+*  [getBlock](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)
 * [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
 * [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
-* [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber) 
+* [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber)
+* [getTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash)
 * [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
 * [getTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
 * [getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
-* [getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) *(works only with the fixed web3 version [link](https://github.com/toffick/web3.js/tree/fix-inputGetLogsFormatter-return-value))*
+* [getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs)
 * [getNetwork](https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version)
 
 Sync request (use as property):
@@ -270,6 +272,25 @@ const WrappedWeb3 = EchoWeb3(Web3);
 	});
 
 })();
+
+```
+## Specific ECHO RPC methods
+
+For both providers have been implemented additional JSON RPC methods:
+
+```echo_accountKeys```
+
+
+```javascript
+// Request
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_coinbase","params":["0x010000000000000000000000000000000000014d"],"id":64}'
+
+// Result
+{
+  "id":64,
+  "jsonrpc": "2.0",
+  "result": ["0xe1c964148ede57465478780707a6e1aef12b5ddc47774028166dc67f3bf580ec", "0xa7c964148ede57465478780707a6e1aef12b5ddc47774028166dc67f3bf58022"]
+}
 
 ```
 

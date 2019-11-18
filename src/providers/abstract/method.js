@@ -32,13 +32,8 @@ class Method {
 		return this.echo.api;
 	}
 
-	/**
-	 * make calculation and api call echo
-	 * @abstract
-	 * @return {Promise}
-	 */
 	execute() {
-
+		this._formatOutput();
 	}
 
 	/**

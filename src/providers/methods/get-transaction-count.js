@@ -1,7 +1,7 @@
 import toHex from 'to-hex';
-import Method from './abstract/method';
+import Method from '../abstract/method';
 import { shortMemoToAddress } from '../../utils/address-utils';
-import { addHexPrefix } from '../../utils/converters-utils';
+import { addHexPrefix, cutHexPrefix } from '../../utils/converters-utils';
 
 class GetTransactionCount extends Method {
 
@@ -18,7 +18,7 @@ class GetTransactionCount extends Method {
 			return this._formatOutput(0);
 		}
 
-		const {total_ops: totalOperations} = await this.api.getObject(account.statistics);
+		const { total_ops: totalOperations } = await this.api.getObject(account.statistics);
 
 		return this._formatOutput(totalOperations);
 	}
@@ -30,7 +30,7 @@ class GetTransactionCount extends Method {
 	 */
 	_formatInput() {
 		const [ethAddress] = this.params;
-		const accountId = shortMemoToAddress(ethAddress.slice(2));
+		const accountId = shortMemoToAddress(cutHexPrefix(ethAddress));
 		return { accountId };
 	}
 

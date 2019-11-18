@@ -1,11 +1,10 @@
-import Method from './method';
-import { toDecimal } from '../../../utils/converters-utils';
-import { mapEchoBlockResultToEth } from '../../../utils/block-utils';
+import Method from '../abstract/method';
+import { mapEchoBlockResultToEth, decodeBlockHash } from '../../utils/block-utils';
+import { isValidHex } from '../../utils/validators';
 
-class GetBlockByNumber extends Method {
+class GetBlockByHash extends Method {
 
 	/**
-	 * make calculation and api call echo
 	 * @return {Promise}
 	 */
 	async execute() {
@@ -26,8 +25,14 @@ class GetBlockByNumber extends Method {
 	 * @private
 	 */
 	_formatInput() {
-		const [blockNumberHex, includeTx] = this.params;
-		const blockNumber = toDecimal(blockNumberHex);
+		const [blockHash, includeTx] = this.params;
+
+		if (!isValidHex(blockHash)) {
+			throw new Error('invalid block number');
+		}
+
+		const { blockNumber } = decodeBlockHash(blockHash);
+
 		return { blockNumber, includeTx };
 	}
 
@@ -44,4 +49,4 @@ class GetBlockByNumber extends Method {
 
 }
 
-export default GetBlockByNumber;
+export default GetBlockByHash;

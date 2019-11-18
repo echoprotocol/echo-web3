@@ -2,13 +2,13 @@ import BridgeMethod from '../../abstract/bridge-method';
 import { addHexPrefix } from '../../../utils/converters-utils';
 import { addressToShortMemo } from '../../../utils/address-utils';
 
-class AccountsBridge extends BridgeMethod {
+class AccountsSyncBridge extends BridgeMethod {
 
 	/**
 	 * make calculation and api call echo
 	 * @return {[String]}
 	 */
-	async execute() {
+	execute() {
 		return this._formatOutput(this.extension.activeAccount);
 	}
 
@@ -25,4 +25,4 @@ class AccountsBridge extends BridgeMethod {
 
 }
 
-export default AccountsBridge;
+export default AccountsSyncBridge;

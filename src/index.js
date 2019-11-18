@@ -5,9 +5,13 @@ import BridgeProvider from './providers/bridge-provider';
 import EthereumjsTx from './echo-ethereumjs-tx';
 import { getEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
-import * as transactionUtils from './utils/transaction-utils';
-import { overrideWeb3CoreMethodsByBridge } from './web3-overrider.js';
+import * as echojslib from 'echojs-lib';
 
+import {
+	overrideWeb3CoreMethodsByBridge,
+	overrideWeb3EthGetLogs
+} from './web3-overrider.js';
+import * as utils from './utils';
 
 /** @typedef {
 *	{
@@ -49,11 +53,12 @@ const EchoWeb3 = (Web3Class) => {
 				throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);
 			}
 
-			if (provider.isEchoProvider || provider.isBridgeCore) {
-				if (provider.isBridgeCore) {
+			if (provider.isEchoProvider || provider._isBridgeCore) {
+				if (provider._isBridgeCore) {
 					overrideWeb3CoreMethodsByBridge(this, provider.extension);
 				}
 
+				overrideWeb3EthGetLogs(this, provider);
 				// set provider if web3 version isn't least than supported and provider can works with echo network
 				this.setProvider(provider);
 			} else {
@@ -62,14 +67,13 @@ const EchoWeb3 = (Web3Class) => {
 
 			// wrap Ethereumjs-wallet classes with connected ECHO instance
 			this._ethereumjsWallet = getEthWalletLib(provider.echo);
-
 		}
 
 		get ethereumjsWallet() {
 			return this._ethereumjsWallet;
 		}
 
-		set ethereumjsWallet(value) {}
+		set ethereumjsWallet(value) { }
 
 		get EthereumjsTx() {
 			const { echo, asset } = this.currentProvider;
@@ -95,7 +99,8 @@ export {
 	EchoProvider,
 	BridgeProvider,
 	EthereumjsTx,
-	transactionUtils
+	utils,
+	echojslib
 };
 
 export default EchoWeb3;

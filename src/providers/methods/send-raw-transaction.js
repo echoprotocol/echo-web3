@@ -2,8 +2,8 @@ import echo, { serializers } from 'echojs-lib';
 
 import { isValidHex } from '../../utils/validators';
 import { encodeTxHash } from '../../utils/transaction-utils';
-import Method from './abstract/method';
-import { addHexPrefix } from "../../utils/converters-utils";
+import Method from '../abstract/method';
+import { addHexPrefix, cutHexPrefix } from '../../utils/converters-utils';
 class SendRawTransaction extends Method {
 
 	/**
@@ -29,7 +29,7 @@ class SendRawTransaction extends Method {
 			throw new Error('rawTx is not a valid hex');
 		}
 
-		const txBuffer = Buffer.from(rawTx.slice(2), 'hex');
+		const txBuffer = Buffer.from(cutHexPrefix(rawTx), 'hex');
 		const deserializedTx = serializers.signedTransaction.deserialize(txBuffer);
 
 		return deserializedTx;
