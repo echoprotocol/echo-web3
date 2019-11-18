@@ -1,4 +1,4 @@
-import Method from '../methods/abstract/method';
+import Method from '../abstract/method';
 import { NETWORK_ID_MAPPING } from '../../constants';
 
 class GetNetwork extends Method {
