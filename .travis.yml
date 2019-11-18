@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "10"
+
+stages:
+  - deploy
+
+jobs:
+  include:
+    - stage: deploy
+      if: tag IS present
+      name: "Deploy to npm"
+      script:
+        - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+        - npm publish
