@@ -55,10 +55,12 @@ class GetLogs extends Method {
 			toBlock = Number(toBlock) || latestBlock;
 		}
 
-		// NOTE:: echo chain interpreters `[fromBlock, toBlock]` is empty range, if  fromBlock === toBlock
-		// we need to decrease left side of range for getting of toBlock's logs
-		// according with this behaviour we need to decrease fromBlock every time 
-		fromBlock -=1;
+		if(fromBlock !== 1){
+			// NOTE:: echo chain interpreters `[fromBlock, toBlock]` is empty range, if  fromBlock === toBlock
+			// we need to decrease left side of range for getting of toBlock's logs
+			// according with this behaviour we need to decrease fromBlock every time 
+			fromBlock -= 1;
+		}
 
 		if (toBlock < fromBlock) throw new Error('toBlock is less than fromBlock');
 
