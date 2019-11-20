@@ -39,7 +39,13 @@ class PersonalSignBridge extends BridgeMethod {
 	 */
 	_formatOutput(result) {
 		const { signature } = result;
-		return addHexPrefix(signature.toString('hex'));
+
+		// TODO rm after release bridge@1.14.0
+		let stringSignarute = signature.toString('hex');
+		if (stringSignarute.length === 256){
+			stringSignarute = stringSignarute.slice(0, 128);
+		}
+		return addHexPrefix(stringSignarute);
 	}
 
 }
