@@ -6,6 +6,7 @@ import EthereumjsTx from './echo-ethereumjs-tx';
 import { getEthWalletLib } from './echo-ethereumjs-wallet';
 import * as constants from './constants';
 import * as echojslib from 'echojs-lib';
+import EchoPolyfill from './page-polyfill';
 
 import {
 	overrideWeb3CoreMethodsByBridge,
@@ -100,7 +101,8 @@ export {
 	BridgeProvider,
 	EthereumjsTx,
 	utils,
-	echojslib
+	echojslib,
+	EchoPolyfill
 };
 
 export default EchoWeb3;

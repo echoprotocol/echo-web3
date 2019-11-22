@@ -3,7 +3,7 @@ import { addHexPrefix } from '../../utils/converters-utils';
 import Provider from '../abstract/provider';
 import BridgeDispatcher from './dispatcher';
 
-class BridgeProvider extends Provider{
+class BridgeProvider extends Provider {
 
 	/**
 	 *
@@ -12,8 +12,10 @@ class BridgeProvider extends Provider{
 	 */
 	constructor(options = {}) {
 		super('', options);
+
 		// for compatibility with logic of frontend apps where MetaMask extension is used
 		this.isMetaMask = true;
+
 		// for private using of echo-web3
 		this._isBridgeCore = true;
 		const { echojslib } = window;
@@ -23,6 +25,9 @@ class BridgeProvider extends Provider{
 
 		this._echo = echojslib.echo;
 		this._extension = echojslib.extension;
+
+		this._network = null;
+		this._account = null;
 	}
 
 	/**
@@ -62,6 +67,26 @@ class BridgeProvider extends Provider{
 		await this.extension.getAccess();
 		const accounts = await this.extension.getAccounts();
 		return accounts.map((account) => addHexPrefix(addressToShortMemo(account.id)));
+	}
+
+	on(event, cb) {
+		if (event === 'accountsChanged') {
+			this._extension.subscribeSwitchAccount((account) => {
+				if (this._account) {
+					cb();
+				} else {
+					this._account = account;
+				}
+			});
+		} else if (event === 'networkChanged') {
+			this._extension.subscribeSwitchNetwork((network) => {
+				if (this._network) {
+					cb();
+				} else {
+					this._network = network;
+				}
+			});
+		}
 	}
 
 }

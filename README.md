@@ -64,17 +64,20 @@ All async methods receive payload parameters like in original Web3 JSON-RPC and 
 The signature of callback is: 
  > `(error, result) => {}`.
 
-Async request (use as method with callback):
-* [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
-*  [getBlock](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)
-* [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
-* [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
-* [getTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash)
-* [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber) 
-* [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
-* [GetTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
-* [GetCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
-* [GetLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs)
+Implemented methods and async request (use as method with callback):
+* [eth_call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call) \<call>
+* [eth_getBlockByNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)  \<getBlock>
+* [eth_getBlockByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash)  \<getBlock>
+* [eth_getTransactionByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash) \<getTransaction>
+* [eth_getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance) \<getBalance>
+* [eth_sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction) \<sendRawTransaction>
+* [eth_blockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber)  \<getBlockNumber>
+* [eth_getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount) \<getTransactionCount>
+* [eth_getTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt) \<getTransactionReceipt>
+* [eth_getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode) \<getCode>
+* [eth_getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) \<getLogs>
+* [net_version](https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version)
+* [eth_estimateGas](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_estimategas)
 
 Sync request (use as property):
 * [gasPrice](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gasprice) 
@@ -139,6 +142,8 @@ Async request (use as method with callback):
 * [getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
 * [getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs)
 * [getNetwork](https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version)
+* [eth_sign](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
+* [personal_sign](https://metamask.github.io/metamask-docs/API_Reference/Signing_Data/Personal_Sign)
 
 Sync request (use as property):
 * [gasPrice](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gasprice) 
