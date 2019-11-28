@@ -10,8 +10,7 @@ export const HASH_IDENTIFIERS = {
 };
 
 export const NETWORK_ID_MAPPING = {
-	'e468f33361fbd0f7ada3423c11212556d5dc10289fa31369cc8cd4c23dcfbb96': 103, // kovan === devnet
-
+	'e468f33361fbd0f7ada3423c11212556d5dc10289fa31369cc8cd4c23dcfbb96': 3, 
 };
 
 
