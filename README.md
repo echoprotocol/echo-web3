@@ -17,7 +17,7 @@ After you can install `echo-web3`:
 npm install echo-web3
 ```
 
-## Basic Usage
+## Basic Usage of EchoProvider
 
 Before usage of wrapped web3 methods ECHO-compatible provider(that is exported from `echo-web3`) should be 
 initiated by calling of `providerInstance.init()` async method.
@@ -64,16 +64,16 @@ All async methods receive payload parameters like in original Web3 JSON-RPC and 
 The signature of callback is: 
  > `(error, result) => {}`.
 
-Implemented methods and async request (use as method with callback):
+Implemented methods and async request (use ``<...>`` as method with callback):
 * [eth_call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call) \<call>
 * [eth_getBlockByNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)  \<getBlock>
 * [eth_getBlockByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash)  \<getBlock>
-* [eth_getTransactionByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash) \<getTransaction>
 * [eth_getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance) \<getBalance>
 * [eth_sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction) \<sendRawTransaction>
 * [eth_blockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber)  \<getBlockNumber>
 * [eth_getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount) \<getTransactionCount>
 * [eth_getTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt) \<getTransactionReceipt>
+* [eth_getTransactionByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash) \<getTransaction>
 * [eth_getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode) \<getCode>
 * [eth_getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) \<getLogs>
 * [net_version](https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version)
@@ -129,25 +129,28 @@ Before calling web3 method's you should give your page access to bridge extensio
 
 See description of method usage above.
 
-Async request (use as method with callback):
-* [sendTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction)
-* [call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call)
-*  [getBlock](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)
-* [getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance)
-* [sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction)
-* [getBlockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber)
-* [getTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash)
-* [getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount)
-* [getTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt)
-* [getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode)
-* [getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs)
-* [getNetwork](https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version)
-* [eth_sign](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
-* [personal_sign](https://metamask.github.io/metamask-docs/API_Reference/Signing_Data/Personal_Sign)
+Implemented methods and async request (use ``<...>`` as method with callback):
+* [eth_sendTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction) \<sendTransaction>
+* [eth_call](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call) \<call>
+* [eth_getBlockByNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbynumber)  \<getBlock>
+* [eth_getBlockByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash)  \<getBlock>
+* [eth_getBalance](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getbalance) \<getBalance>
+* [eth_sendRawTransaction](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction) \<sendRawTransaction>
+* [eth_blockNumber](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_blocknumber)  \<getBlockNumber>
+* [eth_getTransactionCount](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount) \<getTransactionCount>
+* [eth_getTransactionReceipt](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionreceipt) \<getTransactionReceipt>
+* [eth_getTransactionByHash](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash) \<getTransaction>
+* [eth_getCode](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode) \<getCode>
+* [eth_getLogs](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getlogs) \<getLogs>
+* [eth_sign](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)  \<sign>
+* [personal_sign](https://metamask.github.io/metamask-docs/API_Reference/Signing_Data/Personal_Sign) (with auto prefixing and hashing a message)
+* [net_version](https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version)
+* [eth_accounts](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_accounts) 
+* [eth_estimateGas](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_estimategas)
 
 Sync request (use as property):
-* [gasPrice](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gasprice) 
-* [accounts](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_accounts) 
+* [eth_gasPrice](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gasprice) 
+* [eth_accounts](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_accounts) 
 
 
 ## Ehtereumjs-wallet
@@ -279,6 +282,34 @@ const WrappedWeb3 = EchoWeb3(Web3);
 })();
 
 ```
+
+
+## Browser page Web3 polyfill
+
+Metamask injects the `ethereum` object into web page that is Metamask custom provider object with methods as `send`, `sendAsync`, `enable`, `on` etc.
+
+`EchoPolyfill` replaces  Metamask's `ethereum` to `BridgeProvider` instance that has a similar with `ethereum` methods.
+
+```javascript
+import { EchoPolyfill } from 'echo-web3';
+
+window.addEventListener('load', async () => {
+	// Modern dapp browsers...
+	await EchoPolyfill();
+	const { ethereum } = window;
+	if (window.ethereum) {
+		window.web3 = new Web3(ethereum);
+		// Request account access if needed
+		await ethereum.enable();
+		// Acccounts now exposed
+		window.web3.eth.getBlockNumber((err, res)=>{
+			console.log(res) // 2230 ECHO block number
+		})
+	}
+});
+```
+
+
 ## Specific ECHO RPC methods
 
 For both providers have been implemented additional JSON RPC methods:

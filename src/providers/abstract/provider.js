@@ -59,7 +59,8 @@ class Provider {
 	 * @param {Object} payload
 	 * @param {Function} callback triggered on end with (err, result)
 	 */
-	sendAsync(payload, callback) {
+	sendAsync(payload, callback) {	
+		console.log('TCL: sendAsync -> payload', payload);
 		if (!this._dispatcher) {
 			return callback(new Error('Init provider first'));
 		}
