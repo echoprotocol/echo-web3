@@ -9,21 +9,21 @@ class SendTransactionBridge extends BridgeMethod {
 	 * @return {Promise}
 	 */
 	async execute() {
-		const { options, operationId } = this._formatInput();
+		const { options, operationId } = await this._formatInput();
 
 		const tx = this.echo.createTransaction()
 			.addOperation(operationId, options);
 
 		await tx.setRequiredFees();
 		// TODO:: sometimes calling of 0x contracts throwed a OutOfGas error 
-		tx._operations[0][1].fee.amount += 20; 
+		tx._operations[0][1].fee.amount += 20;
 
 		await tx.signWithBridge();
 
 		const broadcastResult = await tx.broadcast();
-		const [{block_num: blockNumber, trx_num: txIndex}] = broadcastResult;
+		const [{ block_num: blockNumber, trx_num: txIndex }] = broadcastResult;
 
-		return this._formatOutput({blockNumber, txIndex, operationId});
+		return this._formatOutput({ blockNumber, txIndex, operationId });
 	}
 
 	/**
@@ -31,7 +31,7 @@ class SendTransactionBridge extends BridgeMethod {
 	 * @return {{options, operationId}}
 	 * @private
 	 */
-	_formatInput() {
+	async _formatInput() {
 		const [ethTx] = this.params;
 		return mapEthTxToEcho(ethTx, this.asset);
 	}
@@ -43,7 +43,7 @@ class SendTransactionBridge extends BridgeMethod {
 	 * @private
 	 */
 	_formatOutput(result) {
-		const {blockNumber, txIndex, operationId} = result;
+		const { blockNumber, txIndex, operationId } = result;
 		return addHexPrefix(encodeTxHash(blockNumber, txIndex, operationId));
 	}
 
