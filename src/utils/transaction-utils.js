@@ -2,9 +2,9 @@ import { constants } from 'echojs-lib';
 import BigNumber from 'bignumber.js';
 import { addressToShortMemo, shortMemoToAddress } from './address-utils';
 import { addHexPrefix, cutHexPrefix, assetValueToWei, weiValueToAssert } from './converters-utils';
-import { NATHAN_ID } from '../constants/echo-constants';
+import { NATHAN_ID, DEFAULT_ASSET_ID, KNOWN_ASSETS_PRECISION_MAP } from '../constants/echo-constants';
 import { isValidData, isValidIdentificationHash } from './validators';
-import { HASH_IDENTIFIERS } from '../constants';
+import { HASH_IDENTIFIERS} from '../constants';
 import { encodeBlockHash } from './block-utils';
 
 /**
@@ -14,13 +14,13 @@ import { encodeBlockHash } from './block-utils';
  */
 export const mapEthTxForCall = (ethTx, asset) => {
 	if (!ethTx || typeof ethTx !== 'object') throw new Error('transaction is not an object');
-	const { to, from, data, value } = ethTx;
+	const { to, from, data, value, assetId } = ethTx;
 	if (data && !isValidData(data)) throw new Error('invalid "data" field');
 	const contractId = shortMemoToAddress(to);
 	const registrarId = from ? shortMemoToAddress(from) : NATHAN_ID;
 	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
 	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toFixed(0, BigNumber.ROUND_DOWN) || 0;
-	return { contractId, registrarId, code: cutHexPrefix(data), amount: valueWithAssetAccuracy };
+	return { contractId, registrarId, code: cutHexPrefix(data), amount: valueWithAssetAccuracy, assetId: assetId || asset.id };
 };
 
 /**
@@ -29,36 +29,39 @@ export const mapEthTxForCall = (ethTx, asset) => {
  * @param {Asset} asset
  * @return {{options, operationId}}
  */
-export const mapEthTxToEcho = (ethTx, asset) => {
-	const { from, to, data, value } = ethTx;
+export const mapEthTxToEcho = (ethTx, asset, supportAnyAsset) => {
+	const { from, to, data, value, asset_id: assetId } = ethTx;
 	let operationId = null;
 
 	const options = {
 		fee: {
-			asset_id: asset.id
+			asset_id: DEFAULT_ASSET_ID
 		},
 	};
 
-	const valueWithAssetAccuracyBN = weiValueToAssert(value, asset.precision);
+	const precision = assetId === undefined ? asset.precision : KNOWN_ASSETS_PRECISION_MAP[assetId || asset.id];
+
+	const valueWithAssetAccuracyBN = weiValueToAssert(value, precision);
 	const valueWithAssetAccuracy = valueWithAssetAccuracyBN.toFixed(0, BigNumber.ROUND_DOWN) || 0;
 
 	if (to && data) {
-		options.callee = shortMemoToAddress(to);
+		const contractId = shortMemoToAddress(to);
+		options.callee = contractId;
 		options.registrar = shortMemoToAddress(from);
 		options.code = cutHexPrefix(data);
-		options.value = { asset_id: asset.id, amount: valueWithAssetAccuracy };
+		options.value = { asset_id: assetId || asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.CONTRACT_CALL;
 	} else if (from && data) {
 		options.registrar = shortMemoToAddress(from);
 		options.code = cutHexPrefix(data);
-		options.value = { asset_id: asset.id, amount: valueWithAssetAccuracy };
+		options.value = { asset_id: assetId || asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.CONTRACT_CREATE;
 		options.eth_accuracy = true;
-		options.supported_asset_id = '1.3.0';
+		options.supported_asset_id = supportAnyAsset ? undefined : asset.id;
 	} else if (from && to) {
 		options.to = shortMemoToAddress(to);
 		options.from = shortMemoToAddress(from);
-		options.amount = { asset_id: asset.id, amount: valueWithAssetAccuracy };
+		options.amount = { asset_id: assetId || asset.id, amount: valueWithAssetAccuracy };
 		operationId = constants.OPERATIONS_IDS.TRANSFER;
 	} else {
 		throw new Error('invalid eth tx object template');

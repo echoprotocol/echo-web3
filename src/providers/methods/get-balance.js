@@ -1,8 +1,7 @@
 import Method from '../abstract/method';
 import { shortMemoToAddress } from '../../utils/address-utils';
 import { assetValueToWei, cutHexPrefix } from '../../utils/converters-utils';
-
-
+import { DEFAULT_ASSET_ID, KNOWN_ASSETS_PRECISION_MAP } from '../../constants/echo-constants';
 class GetBalance extends Method {
 
 	/**
@@ -10,16 +9,16 @@ class GetBalance extends Method {
 	 * @return {Promise}
 	 */
 	async execute() {
-		const { accountId } = this._formatInput();
+		const { accountId, assetId = DEFAULT_ASSET_ID} = this._formatInput();
 
-		const balanceResults = await this.api.getAccountBalances(accountId, [this.asset.id]);
-		const assetValue = balanceResults.find((item) => item.asset_id === this.asset.id);
+		const balanceResults = await this.api.getAccountBalances(accountId, [assetId], true);
+		const [assetValue] = balanceResults;
 
 		if (!assetValue || !balanceResults.length) {
 			return this._formatOutput(0);
 		}
 
-		return this._formatOutput(assetValue.amount);
+		return this._formatOutput({ rawAmount: assetValue.amount, assetId});
 	}
 
 	/**
@@ -28,9 +27,9 @@ class GetBalance extends Method {
 	 * @private
 	 */
 	_formatInput() {
-		const [ethAddress] = this.params;
+		const [ethAddress, , assetId] = this.params;
 		const accountId = shortMemoToAddress(cutHexPrefix(ethAddress));
-		return { accountId };
+		return { accountId, assetId };
 	}
 
 	/**
@@ -40,7 +39,9 @@ class GetBalance extends Method {
 	 * @private
 	 */
 	_formatOutput(result) {
-		return assetValueToWei(result, this.asset.precision);
+		const { rawAmount, assetId} = result; 
+		const precision = KNOWN_ASSETS_PRECISION_MAP[assetId];
+		return assetValueToWei(rawAmount, precision);
 	}
 
 }

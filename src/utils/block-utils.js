@@ -35,7 +35,7 @@ export const decodeBlockHash = (hash) => {
 };
 
 
-export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects, asset) => {
+export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects, assets) => {
 	const { transactions, transaction_merkle_root: txRoot, account, timestamp } = echoBlock;
 
 	const blockHash = addHexPrefix(encodeBlockHash(blockNumber));
@@ -61,7 +61,7 @@ export const mapEchoBlockResultToEth = (echoBlock, blockNumber, includeTxObjects
 	ethereumBlock.uncles = [];
 	if (includeTxObjects) {
 		// fill the transaction field by transaction's objects
-		ethereumBlock.transactions = transactions.map((echoTx, i) => mapEchoTxResultToEth(echoTx, blockNumber, i, asset));
+		ethereumBlock.transactions = transactions.map((echoTx, i) => mapEchoTxResultToEth(echoTx, blockNumber, i, assets[i]));
 	} else {
 		// fill the transaction field by transaction's hashes
 		ethereumBlock.transactions = transactions.map((echoTx, i) => {

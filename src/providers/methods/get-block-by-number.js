@@ -1,8 +1,11 @@
+import { constants } from 'echojs-lib';
+
 import Method from '../abstract/method';
 import { toDecimal } from '../../utils/converters-utils';
 import { mapEchoBlockResultToEth } from '../../utils/block-utils';
 import { isValidHex } from '../../utils/validators';
 import BlockNumber from './block-number';
+import { ECHO_CONSTANTS } from '../../constants';
 
 class GetBlockByNumber extends Method {
 
@@ -48,9 +51,23 @@ class GetBlockByNumber extends Method {
 	 * @return {Object}
 	 * @private
 	 */
-	_formatOutput(result) {
+	async _formatOutput(result) {
 		const { block, blockNumber, includeTx } = result;
-		return mapEchoBlockResultToEth(block, blockNumber, includeTx, this.asset);
+		const { transactions } = block;
+		const assets = await Promise.all(transactions.map(async (transaction) => {
+			const { operations } = transaction;
+			const [[operationId, targetOperation]] = operations;
+
+			if (operationId === constants.OPERATIONS_IDS.CONTRACT_CALL) {
+				const [{ supported_asset_id: assetId }] = await this.echo.api.getContracts([targetOperation.callee]);
+				const precision = ECHO_CONSTANTS.KNOWN_ASSETS_PRECISION_MAP[assetId];
+				const asset = { id: assetId, precision };
+				return asset;
+			}
+			return this.asset;
+
+		}));
+		return mapEchoBlockResultToEth(block, blockNumber, includeTx, assets);
 	}
 
 }

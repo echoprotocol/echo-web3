@@ -9,8 +9,8 @@ class Call extends Method {
 	 * @return {Promise}
 	 */
 	async execute() {
-		const { contractId, registrarId, code, amount } = this._formatInput();
-		const asset = { asset_id: this.asset.id, amount };
+		const { contractId, registrarId, code, amount, assetId } = this._formatInput();
+		const asset = { asset_id: assetId, amount };
 		const rawResult = await this.api.callContractNoChangingState(contractId, registrarId, asset, code);
 		return this._formatOutput(rawResult);
 	}
@@ -22,8 +22,8 @@ class Call extends Method {
 	 */
 	_formatInput() {
 		const [ethTx] = this.params;
-		const { contractId, registrarId, code, amount } = mapEthTxForCall(ethTx, this.asset);
-		return { contractId, registrarId, code, amount };
+		const { contractId, registrarId, code, amount, assetId } = mapEthTxForCall(ethTx, this.asset);
+		return { contractId, registrarId, code, amount, assetId };
 	}
 
 	/**
