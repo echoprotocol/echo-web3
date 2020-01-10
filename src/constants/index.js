@@ -10,7 +10,7 @@ export const HASH_IDENTIFIERS = {
 };
 
 export const NETWORK_ID_MAPPING = {
-	'e468f33361fbd0f7ada3423c11212556d5dc10289fa31369cc8cd4c23dcfbb96': 3, 
+	'09503b9c51c8492ee8e9a4e3a5b813d8ab23a668c245b723e34895e603f3d2d1': 3, 
 };
 
 
