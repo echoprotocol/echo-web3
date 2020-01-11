@@ -23,7 +23,9 @@ class GetLogs extends Method {
 		}
 
 		if (topics) {
-			opts.topics = topics.map((topic) => cutHexPrefix(topic));
+			opts.topics = topics.map((topic) => {
+				return topic === null ? [] : [cutHexPrefix(topic)];
+			});
 		}
 
 		const res = await this.api.getContractLogs(opts);
@@ -50,12 +52,12 @@ class GetLogs extends Method {
 			toBlock = blockNumber;
 		} else {
 			const latestBlock = await (new BlockNumber(this.echo)).execute();
-		
+
 			fromBlock = Number(fromBlock) || latestBlock;
 			toBlock = Number(toBlock) || latestBlock;
 		}
 
-		if(fromBlock !== 1){
+		if (fromBlock !== 1) {
 			// NOTE:: echo chain interpreters `[fromBlock, toBlock]` is empty range, if  fromBlock === toBlock
 			// we need to decrease left side of range for getting of toBlock's logs
 			// according with this behaviour we need to decrease fromBlock every time 
