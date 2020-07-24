@@ -26,7 +26,7 @@ export function shortMemoToAddress(value) {
 	const _1stByte = value.substr(0, 2);
 	if (!/^0[01]$/.test(_1stByte)) throw new Error('13th byte is not in ["00", "01"]');
 	const isContract = _1stByte === '01';
-	const accountIndex = new BigNumber(value.substr(26), 16);
+	const accountIndex = new BigNumber(value.substr(26).toLowerCase(), 16);
 	if (accountIndex.gte('2**32')) return `0x${accountIndex.toString(16).padStart(40, '0')}`;
 	return ['1', isContract ? constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT : '2', accountIndex.toString(10)].join('.');
 }
