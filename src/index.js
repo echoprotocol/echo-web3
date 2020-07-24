@@ -50,7 +50,7 @@ const EchoWeb3 = (Web3Class) => {
 			super();
 
 			// check the minimal Web3 API version for  methods stable overriding
-			if (semver.lt(this.version.api, constants.MIN_WEB3_API_VERSION)) {
+			if (semver.lt(this.version.api || this.version, constants.MIN_WEB3_API_VERSION)) {
 				throw new Error(`A minimum provided Web3 API version is ${constants.MIN_WEB3_API_VERSION}. You have provided ${this.version.api} version`);
 			}
 
